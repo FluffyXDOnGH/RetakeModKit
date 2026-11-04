@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "owner": "Epic Games, Inc.",
+  "source": "Epic UE 5.8.4 Templates/TemplateResources/High/Characters/Content",
+  "sourceAssets": {
+    "Mannequins/Meshes/SKM_Manny_Simple.uasset": "be9f011191ee1887b97cd13bce09886a6066c2fd62c619991070ec142184e1bf",
+    "Mannequins/Meshes/SK_Mannequin.uasset": "22029d47455f24471195b26a0e04a1e1389f27d6a924e88c9f46a0f600c9a530"
+  },
+  "terms": "https://www.unrealengine.com/eula/unreal",
+  "section": "5(b), Distributing Examples",
+  "modifications": [
+    "Native FBX export from template",
+    "Arms selected by original skin weights; other faces removed",
+    "Machine paths removed from FBX metadata",
+    "No source texture/material/Blueprint/physics asset payload included"
+  ]
+}

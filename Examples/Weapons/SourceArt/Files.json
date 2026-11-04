@@ -1,0 +1,14 @@
+{
+  "format": 1,
+  "files": {
+    "BodyContract.json": "f4541c1ca0328da36ca0b3c8e4e4f6c5c80326c692c19223956ae238cc10e24d",
+    "ExampleCarbine.blend": "8210c2e7ebc8722eca55203031867ffbe535a61d68d9cbd58e48c4516202bacf",
+    "README.md": "09a3dacf14e39328bc5e027c9bab9eab29a2fe595b26d7de9621443d8c29d655",
+    "SKM_AuthoringArms.fbx": "ed641a1f82498688114b6aa713974edf5c209686f1c42917b28a769c31385649",
+    "SKM_AuthoringBody.fbx": "4027ff064aedb3f54554137e3689afb0a9a8e75f454e37e80f3f16d53fe4fb25",
+    "SKM_Example_Carbine.fbx": "3dff29d2ff3b7fc45e2812c6039def91ff0bcf7e42dbeb62956966f9a8867bf0",
+    "generate_carbine.py": "46e0a3cb088b8e4b65abdb3d182c407f50a537eb9cbc04eb3b29486608d9781c",
+    "T_Example_Carbine.png": "40831869116367dfa6429b5140925d59d9f0931d8cbb0fa40cc318fa236f541e",
+    "SharedPoseBasis.json": "915c08c5414407f473791685119f0caf7037501d36f969329f48adbf4dde5286"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "contentHash": "72bca0e9d90d87c4fb99c2bb5bee7151b11944c988bb56b64f8bcee8c66d9f83",
+  "format": 1,
+  "gameMetadataRelease": "0.1.0-alpha.34",
+  "publicAcceptance": "pending",
+  "requiredAcceptance": [
+    "freshClone",
+    "freshZip",
+    "mapWorkflow",
+    "weaponWorkflow",
+    "windowsLinux",
+    "negativeCases",
+    "recovery",
+    "compatibleUpdate",
+    "distributionReview"
+  ],
+  "sdkContract": 39,
+  "status": "candidate",
+  "version": "0.1.0-preview.1"
+}

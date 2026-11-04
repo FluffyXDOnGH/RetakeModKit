@@ -1,0 +1,10 @@
+{
+  "format": 1,
+  "majorVersion": 6,
+  "revision": "0049fe12c60313052e99d688bfeaa31c642652d9",
+  "repository": "https://github.com/EpicGames/UnrealEngine",
+  "authoringPlatform": "Windows",
+  "exportPlatforms": ["Windows", "LinuxServer"],
+  "distribution": "source",
+  "qualificationStatus": "pending-current-sdk"
+}

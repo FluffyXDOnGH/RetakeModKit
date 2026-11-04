@@ -1,0 +1,4 @@
+# Official BLAKE3 bindings; same algorithm as the native manifest and mount verifier.
+blake3==1.0.11
+# Same conservative visibility baker dependency used by game packaging.
+numpy==2.3.5

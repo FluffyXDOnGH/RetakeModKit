@@ -1,0 +1,84 @@
+{
+  "Category": "Retake",
+  "Description": "Retake Mod Kit — map and weapon authoring.",
+  "DisableEnginePluginsByDefault": true,
+  "EngineAssociation": "",
+  "FileVersion": 3,
+  "Modules": [
+    {
+      "LoadingPhase": "Default",
+      "Name": "RetakeModKit",
+      "Type": "Runtime"
+    }
+  ],
+  "Plugins": [
+    {
+      "Enabled": true,
+      "Name": "RetakeMapSDK"
+    },
+    {
+      "Enabled": true,
+      "Name": "RetakeDestruction"
+    },
+    {
+      "Enabled": true,
+      "Name": "RetakeMapContent"
+    },
+    {
+      "Enabled": true,
+      "Name": "PythonScriptPlugin"
+    },
+    {
+      "Enabled": true,
+      "Name": "EditorScriptingUtilities"
+    },
+    {
+      "Enabled": true,
+      "Name": "AudioGameplay"
+    },
+    {
+      "Enabled": true,
+      "Name": "AudioGameplayVolume"
+    },
+    {
+      "Enabled": true,
+      "Name": "GameFeatures"
+    },
+    {
+      "Enabled": true,
+      "Name": "ContentBrowserAssetDataSource"
+    },
+    {
+      "Enabled": true,
+      "Name": "ContentBrowserClassDataSource"
+    },
+    {
+      "Enabled": true,
+      "Name": "AnimationData"
+    },
+    {
+      "Enabled": true,
+      "Name": "ControlRig"
+    },
+    {
+      "Enabled": true,
+      "Name": "RigVM"
+    },
+    {
+      "Enabled": true,
+      "Name": "IKRig"
+    },
+    {
+      "Enabled": true,
+      "Name": "ACLPlugin"
+    },
+    {
+      "Enabled": true,
+      "Name": "AudioModulation"
+    },
+    {
+      "Enabled": true,
+      "Name": "SkeletalReduction"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "Retake Map Content",
+  "Description": "Original shared map-authoring materials. Stable paths form part of the Retake Map SDK contract.",
+  "Category": "Retake",
+  "CreatedBy": "Codnyx",
+  "CanContainContent": true,
+  "Modules": []
+}

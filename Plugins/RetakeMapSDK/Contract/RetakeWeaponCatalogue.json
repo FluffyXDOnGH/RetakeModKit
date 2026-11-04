@@ -1,0 +1,71 @@
+{
+  "contentHash": "acda0f10793adacb51fb38d91a60fa42d8da7b2cdd56be9d93e653c7e6e6a3e5",
+  "format": 1,
+  "weapons": [
+    {
+      "displayName": "AK-47 Reference",
+      "id": "ak47",
+      "slot": "Primary"
+    },
+    {
+      "displayName": "AK-74u",
+      "id": "ak74u",
+      "slot": "Primary"
+    },
+    {
+      "displayName": "AT-X MIL",
+      "id": "atxmil",
+      "slot": "Primary"
+    },
+    {
+      "displayName": "Flashbang",
+      "id": "flash_grenade",
+      "slot": "Grenade"
+    },
+    {
+      "displayName": "G17",
+      "id": "g17",
+      "slot": "Secondary"
+    },
+    {
+      "displayName": "M24",
+      "id": "m24",
+      "slot": "Primary"
+    },
+    {
+      "displayName": "M4A1",
+      "id": "m4a1",
+      "slot": "Primary"
+    },
+    {
+      "displayName": "M590A1",
+      "id": "m590a1",
+      "slot": "Primary"
+    },
+    {
+      "displayName": "Molotov Cocktail",
+      "id": "molotov",
+      "slot": "Grenade"
+    },
+    {
+      "displayName": "MP5",
+      "id": "mp5",
+      "slot": "Primary"
+    },
+    {
+      "displayName": "P320",
+      "id": "p320",
+      "slot": "Secondary"
+    },
+    {
+      "displayName": "UMP45",
+      "id": "ump45",
+      "slot": "Primary"
+    },
+    {
+      "displayName": "USP45",
+      "id": "usp45",
+      "slot": "Secondary"
+    }
+  ]
+}

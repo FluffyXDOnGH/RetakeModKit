@@ -1,0 +1,21 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "0.1.0",
+  "FriendlyName": "Retake Destruction",
+  "Description": "Placed destructibles, their prepared definitions, the replicated runtime actor and the fracture converter, shared by the Retake game and the Retake Map Kit (Docs/Proposals/MapModding.md).",
+  "Category": "Retake",
+  "CreatedBy": "Codnyx",
+  "CanContainContent": false,
+  "Modules": [
+    { "Name": "RetakeDestruction", "Type": "Runtime", "LoadingPhase": "Default" },
+    { "Name": "RetakeDestructionEditor", "Type": "Editor", "LoadingPhase": "Default" }
+  ],
+  "Plugins": [
+    { "Name": "RetakeMapSDK", "Enabled": true },
+    { "Name": "Niagara", "Enabled": true },
+    { "Name": "ChaosNiagara", "Enabled": true },
+    { "Name": "GeometryCollectionPlugin", "Enabled": true, "TargetAllowList": [ "Editor" ] },
+    { "Name": "Dataflow", "Enabled": true, "TargetAllowList": [ "Editor" ] }
+  ]
+}

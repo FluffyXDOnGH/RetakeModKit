@@ -1,0 +1,22 @@
+Retake Mod Kit License — Retake modding use
+Copyright 2026 Codnyx. All rights reserved except as granted below.
+
+For original Codnyx code and examples explicitly covered by this license, you may
+use, study, copy, modify and redistribute the material solely to create, maintain,
+test and distribute mods for Retake, or improvements to tools for that purpose.
+You may distribute your Retake mods commercially or without charge, subject to
+the rights in all included content and applicable Retake service terms.
+
+Keep this license and copyright notices with redistributed covered material.
+Identify your modifications and do not represent an unofficial kit as an official
+Codnyx release. This grant does not authorize use in other games or grant rights
+to the Retake name, logos, private game implementation or other excluded content.
+You retain ownership of your original mod content.
+
+Epic Games and third-party code, assets and tools are NOT licensed by this
+document. Their respective licenses and distribution requirements apply. This
+license does not grant access to or redistribution rights for Unreal Engine.
+
+THE COVERED MATERIAL IS PROVIDED AS IS, WITHOUT WARRANTIES OF ANY KIND. TO THE
+EXTENT PERMITTED BY LAW, CODNYX IS NOT LIABLE FOR DAMAGES ARISING FROM ITS USE.
+Rights under this grant end if you fail to comply with its conditions.

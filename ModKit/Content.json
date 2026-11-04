@@ -1,0 +1,66 @@
+{
+  "format": 1,
+  "deliverables": {
+    "mapExample": "Windows/Linux export and local packaged startup/join/travel verified; complete public qualification pending",
+    "weaponExample": "corrected saved basis, native pose preparation, Windows/Linux export and local packaged startup/join/travel verified; final fresh generation and visual acceptance pending",
+    "weaponAuthoringResources": "template provenance, exact reference normalization and shared pose reconstruction verified"
+  },
+  "assets": [
+    {
+      "path": "Plugins/RetakeMapContent/Content/Materials/M_Retake_Surface.uasset",
+      "sha256": "dd3005f990c07d863dcdb3ce51845ba5fcf13ae3bf1c0fc341ff32b4cd48b61a",
+      "origin": "Original Retake SDK material",
+      "license": "Retake Mod Kit License",
+      "distributionStatus": "approved",
+      "dependencies": [
+        "/Engine/EngineResources/WhiteSquareTexture"
+      ],
+      "dependencyInspection": "Retake editor MCP GetDependencies, 2026-11-04; engine reference is not redistributed"
+    },
+    {
+      "path": "Examples/Weapons/SourceArt/ExampleCarbine.blend",
+      "sha256": "8210c2e7ebc8722eca55203031867ffbe535a61d68d9cbd58e48c4516202bacf",
+      "origin": "Original Codnyx blockout, generated from included script",
+      "license": "Retake Mod Kit License",
+      "distributionStatus": "approved"
+    },
+    {
+      "path": "Examples/Weapons/SourceArt/SKM_AuthoringArms.fbx",
+      "sha256": "ed641a1f82498688114b6aa713974edf5c209686f1c42917b28a769c31385649",
+      "origin": "Epic UE5.8.4 installed Third Person template Manny; see Notices/EpicExamples.json",
+      "license": "Epic Unreal Engine EULA section 5(b), Examples including modifications",
+      "distributionStatus": "approved",
+      "evidence": "Notices/EpicExamples.json"
+    },
+    {
+      "path": "Examples/Weapons/SourceArt/SKM_AuthoringBody.fbx",
+      "sha256": "4027ff064aedb3f54554137e3689afb0a9a8e75f454e37e80f3f16d53fe4fb25",
+      "origin": "Epic UE5.8.4 installed Third Person template Manny; see Notices/EpicExamples.json",
+      "license": "Epic Unreal Engine EULA section 5(b), Examples including modifications",
+      "distributionStatus": "approved",
+      "evidence": "Notices/EpicExamples.json"
+    },
+    {
+      "path": "Examples/Weapons/SourceArt/SKM_Example_Carbine.fbx",
+      "sha256": "3dff29d2ff3b7fc45e2812c6039def91ff0bcf7e42dbeb62956966f9a8867bf0",
+      "origin": "Original Codnyx blockout, generated from included script",
+      "license": "Retake Mod Kit License",
+      "distributionStatus": "approved"
+    },
+    {
+      "path": "Examples/Weapons/SourceArt/T_Example_Carbine.png",
+      "sha256": "40831869116367dfa6429b5140925d59d9f0931d8cbb0fa40cc318fa236f541e",
+      "origin": "Original blockout carbine, rendered from its included editable source",
+      "license": "Retake Mod Kit License",
+      "distributionStatus": "approved"
+    },
+    {
+      "path": "Docs/Images/retake-modkit-banner.png",
+      "sha256": "18367e5b1d34e6864dede52aae725902fcef376636371dcd44bb749ab777f3df",
+      "origin": "Retake branding adapted from user-provided wordmark and workbench artwork using built-in image generation, 2026-11-04",
+      "license": "Retake branding; included for identification of this kit, no separate trademark license",
+      "distributionStatus": "approved",
+      "evidence": "User explicitly requested this header and its public repository display."
+    }
+  ]
+}

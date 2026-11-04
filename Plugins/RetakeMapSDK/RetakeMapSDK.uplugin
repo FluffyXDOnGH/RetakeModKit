@@ -1,0 +1,19 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "0.1.0",
+  "FriendlyName": "Retake Map SDK",
+  "Description": "Map-element contract, probe and export tooling shared by the Retake game and the Retake Map Kit (Docs/Proposals/MapModding.md).",
+  "Category": "Retake",
+  "CreatedBy": "Codnyx",
+  "CanContainContent": false,
+  "Modules": [
+    { "Name": "RetakeMapSDK", "Type": "Runtime", "LoadingPhase": "Default" },
+    { "Name": "RetakeMapSDKEditor", "Type": "Editor", "LoadingPhase": "Default" }
+  ],
+  "Plugins": [
+    { "Name": "AudioGameplay", "Enabled": true },
+    { "Name": "Niagara", "Enabled": true },
+    { "Name": "ControlRig", "Enabled": true, "TargetAllowList": [ "Editor" ] }
+  ]
+}
