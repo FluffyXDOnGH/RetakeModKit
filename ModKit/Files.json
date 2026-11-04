@@ -1,5 +1,5 @@
 {
-  "contentHash": "72bca0e9d90d87c4fb99c2bb5bee7151b11944c988bb56b64f8bcee8c66d9f83",
+  "contentHash": "48d7aaf10e1df15b964abff5930fb41c201d21050abbcd12545623ee7b69654d",
   "files": {
     ".gitattributes": {
       "sha256": "13244859cc7351a04403dd55ac653feaf11d6bfcbc6cbe0d6a1827a00c1be013",
@@ -766,8 +766,8 @@
       "size": 1013
     },
     "README.md": {
-      "sha256": "ff0c9d52142cd443eb5da08f9f0d289cf11e4b267d59d2c57d8dcfe4a32d4c91",
-      "size": 2239
+      "sha256": "5bbf26de8923c49a7dcb2265cf40128881d4ef4500481cda29e63827dc3781ad",
+      "size": 2100
     },
     "RetakeModKit.uproject": {
       "sha256": "596d7f0f7f9bd0c485a294f8aef5cf53edba3b25c15cf3c312957fcffd17d3fb",

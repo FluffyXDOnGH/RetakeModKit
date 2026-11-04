@@ -15,8 +15,6 @@ git clone https://github.com/humarkx/RetakeModKit.git
 cd RetakeModKit
 ```
 
-All current assets are included directly in Git; **Git LFS is not required**. If you received the kit ZIP, extract it and continue below.
-
 ## 2. Set up Unreal
 
 Obtain Unreal Engine source through your Epic-linked GitHub account. Check out the **exact UE6 revision** in [Engine.json](ModKit/Engine.json), then follow Epic's source-build instructions to build **UnrealEditor** and **ShaderCompileWorker** for Windows. A different UE6 checkout or Launcher engine will not pass setup.
