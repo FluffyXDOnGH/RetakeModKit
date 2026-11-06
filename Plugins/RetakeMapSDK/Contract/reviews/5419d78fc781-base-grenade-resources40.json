@@ -1,0 +1,27 @@
+{
+  "addedRuntimeEntries": [
+    "ids/weapons/frag_grenade",
+    "ids/weapons/smoke_grenade"
+  ],
+  "basis": [
+    "Append two independent base-game grenade resource IDs; all previous IDs retain their meanings and availability.",
+    "No reflected class, property, enum, default, subobject, manifest encoding or weapon minimum changes.",
+    "Contract39 maps and weapon packs remain readable; new exports using these resources declare contract40.",
+    "This source behavior review does not qualify a new cooked engine/game combination."
+  ],
+  "changedRuntimeEntries": [],
+  "compatible": true,
+  "contractVersion": 40,
+  "format": 1,
+  "from": "3e4ae790ab49a7c3de3166fdf304b8562f71a65ebd1fc1a1b030f42c70b3f853",
+  "oldestReadableContract": 39,
+  "removedRuntimeEntries": [],
+  "to": "5419d78fc7810348f2baba0198e3c90f283856c8fc2ad095167f23feb289f9cf",
+  "validation": {
+    "editorBuild": "passed, zero errors",
+    "nativeSurface": "51462 entries; exactly two additions",
+    "packagedRuntime": "pending user",
+    "sharedHitRigContentHash": "5aff97e64eed73dac9e3576913da26c7 (unchanged after bake)",
+    "sourceAndHeaderCompilation": "Win64 and Linux passed"
+  }
+}

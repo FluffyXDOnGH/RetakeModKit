@@ -30,6 +30,8 @@ public:
     void ApplyLocalizedDamage(const FVector& Point,float Radius,float Strain,const FVector& Direction,float DirectionalSpeed,float RadialSpeed,float AngularSpeed,bool bPointImpact,const FVector2D& NoiseRange,const FVector& SurfaceNormal,bool bAuthoredResponse);
     /** Client: release these leaf pieces (and any unbroken ancestors, as native late-join replication does) and disable them. */
     void RemovePieces(const TArray<int32>& TransformIndices);
+protected:
+    virtual void OnCreatePhysicsState() override;
 private:
     void DispatchUniqueField(const FFieldSystemCommand& Command);
 };
@@ -95,6 +97,7 @@ protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type Reason) override;
 private:
+    friend class URetakeGeometryCollectionComponent;
     UPROPERTY(VisibleAnywhere, Category="Retake|Destruction|Components") TObjectPtr<URetakeGeometryCollectionComponent> Geometry;
     UPROPERTY(VisibleAnywhere, Category="Retake|Destruction|Components") TObjectPtr<UStaticMeshComponent> Frame;
     UPROPERTY(VisibleAnywhere, Category="Retake|Destruction|Components") TObjectPtr<URetakeDestructibleTraversalComponent> Traversal;
@@ -127,6 +130,7 @@ private:
     FRetakePieceMask AppliedCollisionMask;
     bool bJoinStateApplied=false;
     FTimerHandle SettleTimer;
+    FTimerHandle PhysicsStateRefreshTimer;
     FTimerHandle CollisionAudioWindowTimer;
     FTimerHandle DebrisSleepTimer;
     double CollisionAudioEndTime=0;
@@ -152,6 +156,8 @@ private:
     bool bTrackingDebris=false;
     bool bTraversalCollisionApplied=false;
     void Configure();
+    /** Reapply persistent state once a newly created collection proxy is ready, outside its creation callback. */
+    void RefreshPhysicsState();
     void RefreshTraversal();
     void RefreshReleased();
     void ApplyReleasedCollision();

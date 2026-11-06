@@ -14,7 +14,7 @@ Create the separate original blockout carbine example in a fresh namespace:
 .\.venv\Scripts\python.exe Scripts\ModKit\retake_kit.py example --kind weapons --mod RetakeMod_MyExampleWeapons
 ```
 
-It imports the provided original carbine and template-derived body/arms, creates owned definitions, procedural example sounds and editable reference/action clips, then runs native pose preparation and validation. It never overwrites an existing workspace. The example is a teaching blockout, with simple pose/motion and a timed reload sound; its appearance is not a production animation pack. Review the release's recorded acceptance before treating a candidate as qualified.
+It imports the provided original carbine and template-derived body/arms, creates owned definitions, procedural example sounds and editable reference/action clips, then runs native pose preparation and validation. It never overwrites an existing workspace. The example is a teaching blockout, with simple pose/motion and a timed reload sound; its appearance is not a production animation pack.
 
 The example authors both hands in its clips. Retake's optional automatic support-hand IK uses the weapon's `FABRIK_Socket`; add that socket deliberately when adopting that workflow. The body basis also includes the shared lean and clearance references, so new poses can be prepared against the game's common procedural posture rules.
 
@@ -32,5 +32,7 @@ Preparation uses a shared SDK authoring basis or an explicitly mod-owned basis. 
 ```
 
 Profiles select behavior data without duplicating identical assets. Pack IDs separate weapons that share display names. Map/loadout references must declare exact weapon-pack dependencies, and the server selects which packs/profiles are enabled.
+
+Keep weapon IDs stable: a weapon is addressed as `<ModId>.<WeaponId>`, not by its display name. These IDs let server owners refer to pack weapons alongside base-game weapons in loadout configuration. Author sensible defaults in the pack; server configuration determines the effective choices and rules. Configuration features are supplied by the installed Retake client/server, while the kit supplies authoring and export tools.
 
 Follow [Export.md](Export.md) for export and testing. A valid weapon pack must install without rebuilding Retake or rebaking private game assets.

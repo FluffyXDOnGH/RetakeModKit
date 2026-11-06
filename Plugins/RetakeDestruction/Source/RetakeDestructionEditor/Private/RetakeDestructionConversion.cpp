@@ -322,7 +322,9 @@ ARetakeDestructiblePlacement* URetakeDestructionConversion::ConvertDoorLeaf(ARet
     Staged->SetMobility(EComponentMobility::Movable);Staged->SetStaticMesh(Leaf->GetStaticMesh());
     for (int32 I=0;I<Leaf->OverrideMaterials.Num();++I) if (UMaterialInterface* Material=Leaf->OverrideMaterials[I]) Staged->SetMaterial(I,Material);
     Source->SetActorLabel(Door->GetActorLabel()+TEXT(" Leaf"));Source->SetFolderPath(Door->GetFolderPath());
-    ARetakeDestructiblePlacement* Placement=ConvertActor(Source,Options,Message);
+    FRetakeDestructionConversionOptions DoorOptions=Options;
+    DoorOptions.bUseWoodDoorDefaults=!Options.Preset;
+    ARetakeDestructiblePlacement* Placement=ConvertActor(Source,DoorOptions,Message);
     if (!Placement) {if (IsValid(Source)) Source->GetWorld()->EditorDestroyActor(Source,true);return nullptr;}
     Placement->Modify();Placement->Door=Door;Placement->SetActorLabel(Door->GetActorLabel()+TEXT(" Leaf"));
     // The leaf hangs from a strip along its hinge edge, anchored as soon as the collection is configured (before physics runs).
@@ -432,12 +434,26 @@ ARetakeDestructiblePlacement* URetakeDestructionConversion::ConvertActor(AStatic
     Definition->bAnchorEnds=Options.bAnchorEnds;Definition->EndAnchorDepthCm=Options.AnchorDepthCm;
     Definition->PreparedCollectionGuid.Invalidate();
     Definition->PhysicalMaterial=Cast<UPhysicalMaterial>(Remapped(PhysicsMaterial,Copies));
+    if (Options.bUseWoodDoorDefaults && !Options.Preset)
+    {
+        // Each conversion owns this material alongside its copied source. There is no
+        // private-game preset dependency and an explicit creator preset is never changed.
+        FString WoodPackage,WoodName;
+        Tools.CreateUniqueAssetName(SourceFolder/TEXT("PM_Wood"),TEXT(""),WoodPackage,WoodName);
+        auto* Wood=NewObject<UPhysicalMaterial>(CreatePackage(*WoodPackage),*WoodName,RF_Public|RF_Standalone|RF_Transactional);
+        Wood->SurfaceType=SurfaceType5; // Canonical Wood in the SDK's structural profile.
+        FAssetRegistryModule::AssetCreated(Wood);
+        Wood->MarkPackageDirty();
+        Definition->PhysicalMaterial=Wood;
+    }
     Collection->PhysicsMaterial=Definition->PhysicalMaterial;
     Progress.EnterProgressFrame(1,FText::FromString(TEXT("Preparing the collection and saving assets")));
     if (!Definition->PrepareCollection()) return Fail(TEXT("Collection preparation failed."));
     FDataValidationContext Validation;
     if (Definition->IsDataValid(Validation)!=EDataValidationResult::Valid) return Fail(TEXT("The generated definition failed validation."));
     TArray<UPackage*> Packages{Collection->GetOutermost(),Definition->GetOutermost()};
+    if (Options.bUseWoodDoorDefaults && !Options.Preset && Definition->PhysicalMaterial)
+        Packages.AddUnique(Definition->PhysicalMaterial->GetOutermost());
     for (const auto& Pair:Copies) if (UPackage* Copied=FindPackage(nullptr,*Pair.Value)) Packages.AddUnique(Copied);
     for (auto* AssetPackage:Packages) AssetPackage->MarkPackageDirty();
     if (!UEditorLoadingAndSavingUtils::SavePackages(Packages,true)) return Fail(TEXT("Generated assets could not all be saved."));

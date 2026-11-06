@@ -1,0 +1,23 @@
+{
+  "basis": [
+    "SDK39 remains readable. SDK40 adds only the previously reviewed independent base frag/smoke resource IDs.",
+    "No further reflected properties, enums, defaults, subobjects or resource identities change in the native capture.",
+    "Case-only duplicate map IDs now fail consistently in native and Python validation; valid creator exports retain their identities.",
+    "Destroyed door visibility is reconstructed from persistent state; authored visibility/collision return correctly on round reset.",
+    "Full decay disables the door body even before collapse counting; newly created collection physics reapplies persistent state.",
+    "Actor EndPlay cancels deferred state work. No new per-frame polling or map-specific branch is introduced.",
+    "Editor-only basis, recipe and conversion tooling does not alter existing runtime content contracts."
+  ],
+  "compatible": true,
+  "contractVersion": 40,
+  "format": 1,
+  "oldestReadableContract": 39,
+  "to": "3299f4841f4f21e89f96e15d2210dc5c564249f8929f5ff1bfc0f7df571c14bf",
+  "validation": {
+    "editorBuild": "passed before capture; final release build/preflight tracked separately",
+    "nativeSurface": "51462 entries; unchanged from the SDK40 resource checkpoint",
+    "packagedRuntime": "pending alpha.35 qualification; this review does not certify an engine pair",
+    "regressionExecution": "pending; regression definitions compiled",
+    "targetedCompilation": "Windows and Linux passed for the door/destruction runtime changes"
+  }
+}

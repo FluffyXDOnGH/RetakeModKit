@@ -196,7 +196,9 @@ private:
 	void FindPawnsInLeaf(TArray<APawn*>& OutPawns, const float* AtProgress = nullptr) const;
 	/** Pushes pawns inside the leaf along its direction of travel; YawDirection is the sign of this frame's yaw change. */
 	void PushPawnsOutOfLeaf(float YawDirection) const;
-	/** Leaf blocks pawns, swinging or at rest; it overlaps them only while a pawn is left inside it at rest. */
+	/** Capture authored defaults before either BeginPlay or a destructible leaf changes the mesh. */
+	void CaptureLeafDefaults();
+	/** Projects persistent leaf visibility/collision, including snapshots received before BeginPlay. */
 	void UpdatePawnBlocking();
 	/** Server: closes the open door once AutoCloseTime has passed, pushing it back while the doorway is occupied. Re-arms itself. */
 	void UpdateAutoClose();
@@ -219,6 +221,8 @@ private:
 	double AutoCloseTime = 0.0;
 	bool bLeafBlocksPawns = true;
 	bool bLeafHandedOver = false;
+	bool bLeafDefaultsCaptured = false;
+	bool bAuthoredLeafVisible = true;
 	/** DoorMesh's authored collision, restored when a broken door resets. */
 	TEnumAsByte<ECollisionEnabled::Type> LeafCollision = ECollisionEnabled::QueryAndPhysics;
 	/** Server world time at which the door accepts the next request; replicated so client prompts grey out honestly. */

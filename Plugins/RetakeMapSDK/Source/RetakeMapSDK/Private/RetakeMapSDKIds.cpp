@@ -11,7 +11,8 @@ const TArray<FName>& RetakeMapSDKIds::Weapons()
 {
 	static const TArray<FName> Ids = {
 		TEXT("ak47"), TEXT("ak74u"), TEXT("atxmil"), TEXT("flash_grenade"), TEXT("g17"), TEXT("m24"), TEXT("m4a1"),
-		TEXT("m590a1"), TEXT("mp5"), TEXT("molotov"), TEXT("p320"), TEXT("ump45"), TEXT("usp45") };
+		TEXT("m590a1"), TEXT("mp5"), TEXT("molotov"), TEXT("p320"), TEXT("ump45"), TEXT("usp45"),
+		TEXT("frag_grenade"), TEXT("smoke_grenade") };
 	return Ids;
 }
 

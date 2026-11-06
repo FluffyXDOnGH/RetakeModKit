@@ -14,8 +14,8 @@ import wave
 import unreal
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import retake_example_pose
-import retake_body_contract
+import retake_weapon_basis
+import retake_sources
 
 match = re.search(r'(?:^|\s)-RetakeExampleMod=(RetakeMod_[A-Za-z0-9_]+)(?:\s|$)', unreal.SystemLibrary.get_command_line())
 if not match:
@@ -27,6 +27,8 @@ receipt_path = kit / 'Saved/ModKit' / f'example-{mod}.json'
 receipt = json.loads(receipt_path.read_text(encoding='utf-8'))
 if receipt.get('modId') != mod or not receipt.get('initialFiles') or receipt.get('kind') != 'weapons':
     raise RuntimeError('A fresh weapon workspace receipt is required')
+if set(retake_sources.inventory(workspace, mod)) != set(receipt['initialFiles']):
+    raise RuntimeError('The starter contains new creator files; use a fresh example workspace')
 for relative, expected in receipt['initialFiles'].items():
     path = (workspace / relative).resolve()
     if not path.is_relative_to(workspace) or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
@@ -99,16 +101,17 @@ def mesh(filename, name, skeleton=None):
     return import_file(raw / filename, 'Meshes', name, options)
 
 
-body = mesh('SKM_AuthoringBody.fbx', 'SKM_AuthoringBody')
-skeleton = body.get_editor_property('skeleton')
-arms = mesh('SKM_AuthoringArms.fbx', 'SKM_AuthoringArms', skeleton)
+authoring = retake_weapon_basis.WeaponBasisAuthor(mod, raw, created).create()
+body, arms, skeleton = authoring.body, authoring.arms, authoring.skeleton
+contract, standing_pose = authoring.contract, authoring.standing_pose
+stand, crouch, basis = authoring.stand, authoring.crouch, authoring.basis
+sequence = authoring.sequence
 weapon = mesh('SKM_Example_Carbine.fbx', 'SKM_Example_Carbine')
 weapon_skeleton = weapon.get_editor_property('skeleton')
-if not skeleton or not weapon_skeleton:
-    raise RuntimeError('The imported reference/weapon meshes require owned skeletons')
-created.extend([skeleton, weapon_skeleton])
+if not weapon_skeleton:
+    raise RuntimeError('The example mesh requires its own weapon skeleton')
+created.append(weapon_skeleton)
 
-# A mod-owned original material; no material/texture is imported from the reference FBX files.
 material = assets.create_asset('M_Example_Carbine', f'/{mod}/Materials', unreal.Material, unreal.MaterialFactoryNew())
 color = unreal.MaterialEditingLibrary.create_material_expression(material, unreal.MaterialExpressionConstant3Vector, -200, 0)
 color.set_editor_property('constant', unreal.LinearColor(.06, .32, .38, 1.0))
@@ -116,87 +119,11 @@ unreal.MaterialEditingLibrary.connect_material_property(color, '', unreal.Materi
 material.set_editor_property('used_with_skeletal_mesh', True)
 unreal.MaterialEditingLibrary.recompile_material(material)
 created.append(material)
-for model in (body, arms, weapon):
-    slots = model.get_editor_property('materials')
-    for slot in slots:
-        slot.set_editor_property('material_interface', material)
-    model.set_editor_property('materials', slots)
+slots = weapon.get_editor_property('materials')
+for slot in slots:
+    slot.set_editor_property('material_interface', material)
+weapon.set_editor_property('materials', slots)
 
-contract = json.loads((raw / 'BodyContract.json').read_text(encoding='utf-8'))
-animation_bones = contract['body']['animationBones']
-standing_pose = retake_example_pose.pose(contract['body'], 0)
-
-
-def sequence(name, posture, frames=30, reloading=False, reference=None):
-    """Original arm poses over the exact public lower-body contract; no motion-library clips."""
-    factory = unreal.AnimSequenceFactory()
-    factory.set_editor_property('target_skeleton', skeleton)
-    result = assets.create_asset(name, f'/{mod}/Animations', unreal.AnimSequence, factory)
-    if not result:
-        raise RuntimeError('Could not create ' + name)
-    controller = result.get_editor_property('controller')
-    controller.open_bracket('Create original example reference pose')
-    controller.set_frame_rate(unreal.FrameRate(30, 1))
-    controller.set_number_of_frames(unreal.FrameNumber(frames))
-    poses = [reference or retake_example_pose.pose(contract['body'], posture,
-             math.sin(math.pi * frame / frames) ** 2 if reloading else 0.0,
-             standing_pose['rightHandRotation']) for frame in range(frames + 1)]
-    for index, bone in enumerate(animation_bones):
-        if not controller.add_bone_curve(bone['name']):
-            raise RuntimeError('Could not add authoring bone ' + bone['name'])
-        if not controller.set_bone_track_keys(bone['name'], [unreal.Vector(*pose['positions'][index]) for pose in poses],
-                                             [unreal.Quat(*pose['rotations'][index]) for pose in poses],
-                                             [unreal.Vector(*pose['scales'][index]) for pose in poses]):
-            raise RuntimeError('Could not author reference pose for ' + bone['name'])
-    controller.close_bracket()
-    created.append(result)
-    return result
-
-
-stand = sequence('AS_Example_Stand', 0)
-crouch = sequence('AS_Example_Crouch', 1)
-basis = asset('RetakeWeaponPoseBasis', 'Authoring', 'DA_Example_Basis')
-body_value = basis.get_editor_property('body').copy()
-body_value.import_text(retake_body_contract.import_text(contract['body']))
-change(basis, Body=body_value, ReferenceMesh=body, StandLower=stand, CrouchLower=crouch, SupportSocket='FABRIK_Socket')
-if unreal.RetakeMapSDKEditorLibrary.get_weapon_authoring_body_identity(basis) != contract['bodyIdentity']:
-    raise RuntimeError('The imported body contract lost numeric precision; do not prepare or export it')
-error = unreal.RetakeMapSDKEditorLibrary.normalize_weapon_authoring_reference(basis, mod)
-if error:
-    raise RuntimeError(error)
-
-# Shared procedural posture data is part of the authoring contract. Leaving these offsets empty
-# would prepare upright hit poses while the installed game's character visibly leans/lowers its arms.
-shared = json.loads((raw / 'SharedPoseBasis.json').read_text(encoding='utf-8'))
-if shared['sourceRigIdentity'] != contract['sourceRigIdentity'] or shared['bones'] != [b['name'] for b in animation_bones]:
-    raise RuntimeError('Shared procedural poses do not match this body authoring release')
-neutral_reference = sequence('AS_Authoring_NeutralReference', 0, frames=1,
-                             reference=retake_example_pose.reference_pose(contract['body']))
-for field, rows in shared['spaces'].items():
-    factory = unreal.AimOffsetBlendSpaceFactory1D()
-    factory.set_editor_property('target_skeleton', skeleton)
-    space = assets.create_asset('AO_Authoring_' + field, f'/{mod}/Authoring/Poses', unreal.AimOffsetBlendSpace1D, factory)
-    if not space:
-        raise RuntimeError('Could not create shared authoring space ' + field)
-    parameters = list(space.get_editor_property('blend_parameters'))
-    parameters[0] = change(parameters[0], display_name='Posture', min=min(row['axis'] for row in rows),
-                           max=max(row['axis'] for row in rows), grid_num=10)
-    space.set_editor_property('blend_parameters', parameters)
-    samples = []
-    for index, row in enumerate(rows):
-        if 'AAT_ROTATION_OFFSET_MESH_SPACE' not in row['additiveType']:
-            raise RuntimeError('Unsupported shared procedural pose type')
-        clip = sequence('AS_Authoring_' + field + '_' + str(index), 0, frames=1,
-                        reference=retake_example_pose.additive_reference_pose(contract['body'], row['transforms']))
-        change(clip, additive_anim_type=unreal.AdditiveAnimationType.AAT_ROTATION_OFFSET_MESH_SPACE,
-               ref_pose_type=unreal.AdditiveBasePoseType.ABPT_ANIM_FRAME, ref_pose_seq=neutral_reference, ref_frame_index=0)
-        samples.append(change(unreal.BlendSample(), animation=clip, sample_value=unreal.Vector(row['axis'], 0, 0), rate_scale=1.0))
-    space.set_editor_property('sample_data', samples)
-    created.append(space)
-    native_field = {'stand_lean':'StandLean', 'crouch_lean':'CrouchLean', 'stand_moving_lean':'StandMovingLean',
-                    'crouch_moving_lean':'CrouchMovingLean', 'clearance_stand':'ClearanceStand', 'clearance_crouch':'ClearanceCrouch'}[field]
-    basis.set_editor_property(native_field, space)
-basis.set_editor_property('LeanStrength', shared['leanStrength'])
 profile = asset('RetakeWeaponAnimationProfile', 'Definitions', 'DA_Example_Profile')
 change(profile, profile_id=mod + '.example_carbine', no_handling_animations=True)
 for field in ('first_person_anims', 'third_person_anims'):

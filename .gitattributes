@@ -1,5 +1,5 @@
 # Preserve the exact bytes used by the SDK and release inventories.
-# This development preview stores assets directly in Git; Git LFS is not required.
+# Assets are stored directly in Git; Git LFS is not required.
 * -text -filter
 *.uasset -diff -merge
 *.umap -diff -merge

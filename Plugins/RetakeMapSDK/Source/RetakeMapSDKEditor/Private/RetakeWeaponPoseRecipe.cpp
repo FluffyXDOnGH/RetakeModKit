@@ -1,5 +1,6 @@
 // Copyright 2026 Codnyx. All Rights Reserved.
 #include "RetakeWeaponPoseRecipe.h"
+#include "AssetRegistry/AssetData.h"
 #include "RetakeWeaponPoseBasis.h"
 #include "RetakeWeaponPose.h"
 #include "RetakeWeaponPoseBaking.h"
@@ -76,3 +77,49 @@ bool RetakeWeaponPosePreparation::ValidateSources(const FString& Owner,const URe
     {Error=TEXT("Weapon preparation is stale; save its changed inputs and run prepare-weapons again.");return false;}
     return true;
 }
+bool RetakeWeaponPosePreparation::PlanProfiles(const URetakeWeaponPack& Catalogue,TArray<FRetakeWeaponPackProfile>& Out,FString& Error)
+{
+    Out=Catalogue.Profiles;
+    for (auto& Profile:Out)
+    {
+        if (!URetakeWeaponPack::IsValidLocalId(Profile.ProfileId))
+        {Error=TEXT("Choose a valid profile ID before preparing weapons.");return false;}
+        if (Profile.PoseContribution.IsNull())
+        {
+            const FString Name=TEXT("DA_Poses_")+Profile.ProfileId;
+            Profile.PoseContribution=FSoftObjectPath(TEXT("/")+Catalogue.PackId+TEXT("/Preparation/")+Name+TEXT(".")+Name);
+        }
+    }
+    TStrongObjectPtr<URetakeWeaponPack> Projected(NewObject<URetakeWeaponPack>());
+    Projected->PackId=Catalogue.PackId;Projected->DisplayName=Catalogue.DisplayName;
+    Projected->Weapons=Catalogue.Weapons;Projected->Profiles=Out;
+    return Projected->Validate(Error);
+}
+
+URetakeWeaponPoseBasis* RetakeWeaponPosePreparation::FindBasis(const FString& Owner,const FSoftObjectPath& Explicit,
+    const URetakeWeaponPoseContribution* Output,FString& Error)
+{
+    FSoftObjectPath Path=Explicit;
+    if (Path.IsNull() && Output)
+        if (const auto* Recipe=Cast<URetakeWeaponPoseRecipe>(Output->AuthoringRecipe))
+            Path=Recipe->Basis.ToSoftObjectPath();
+    if (Path.IsNull())
+    {
+        auto& Registry=FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry")).Get();
+        TArray<FAssetData> Assets;Registry.GetAssetsByPath(FName(*(TEXT("/")+Owner)),Assets,true);
+        Assets.RemoveAll([](const FAssetData& Asset){return Asset.AssetClassPath!=URetakeWeaponPoseBasis::StaticClass()->GetClassPathName();});
+        if (Assets.Num()!=1)
+        {Error=Assets.IsEmpty()?TEXT("Create the weapon animation basis first (weapon-basis)."):
+            TEXT("This workspace has multiple authoring bases; select one explicitly with --basis.");return nullptr;}
+        Path=Assets[0].GetSoftObjectPath();
+    }
+    if (!URetakeWeaponPack::IsOwnedObjectPath(Owner,Path) && !URetakeWeaponPack::IsOwnedObjectPath(TEXT("RetakeMapContent"),Path))
+    {Error=TEXT("Choose an owned or shared SDK authoring basis.");return nullptr;}
+    auto* Basis=Cast<URetakeWeaponPoseBasis>(Path.TryLoad());
+    if (!Basis || Basis->GetClass()!=URetakeWeaponPoseBasis::StaticClass() || Basis->GetOutermost()->IsDirty())
+    {Error=TEXT("Load and save the selected native authoring basis.");return nullptr;}
+    if (!Basis->Body.Validate(Error)) return nullptr;
+    if (!Basis->ReferenceMesh) {Error=TEXT("The authoring basis needs its reference mesh.");return nullptr;}
+    return Basis;
+}
+

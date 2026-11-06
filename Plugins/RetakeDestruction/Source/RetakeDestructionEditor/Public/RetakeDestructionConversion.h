@@ -30,6 +30,8 @@ USTRUCT(BlueprintType)
 struct FRetakeDestructionConversionOptions
 {
     GENERATED_BODY()
+    /** Internal conversion intent; door conversion supplies owned wood defaults when no preset is selected. */
+    bool bUseWoodDoorDefaults = false;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Retake|Destruction|Assets") FString AssetName=TEXT("Destructible");
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Retake|Destruction|Fractures", meta=(ShowOnlyInnerProperties)) FRetakeFractureRecipe Fracture;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Retake|Destruction|Materials") TObjectPtr<UMaterialInterface> InteriorMaterial;

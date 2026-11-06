@@ -4,7 +4,7 @@
 
 Create maps and weapons for **Retake** in a standalone Unreal project.
 
-> **Development preview:** setup and authoring are available. Public compatibility qualification is still in progress, so normal export and game testing remain gated. This is not a finished kit release. **UE5.8 is not supported yet.**
+Keep the Mod Kit and Retake up to date. Setup and export check the required engine, SDK and game compatibility automatically.
 
 ## 1. Get the kit
 
@@ -41,6 +41,6 @@ Create a new mod namespace before editing examples. Keep your assets inside that
 
 **Create → Author → Validate → Prepare/Bake → Export → Test**
 
-Follow the [export and testing guide](Docs/Export.md) once a qualified kit/game combination is available. Exports contain Windows and Linux server content; editable-source recovery is a separate archive. Uploading and workshop integration are outside this kit.
+Follow the [export and testing guide](Docs/Export.md). Exports contain Windows and Linux server content; editable-source recovery is a separate archive. Uploading and workshop integration are outside this kit.
 
 [Compatibility & troubleshooting](Docs/Compatibility.md) · [License](LICENSE.txt) · [Third-party notices](Notices/ThirdParty.md)

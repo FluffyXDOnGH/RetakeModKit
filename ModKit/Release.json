@@ -1,7 +1,7 @@
 {
-  "contentHash": "48d7aaf10e1df15b964abff5930fb41c201d21050abbcd12545623ee7b69654d",
+  "contentHash": "a2e1cf16d1dcdee403b3755dbe83f8ab35da4f1845fb30053a1503cee6d29638",
   "format": 1,
-  "gameMetadataRelease": "0.1.0-alpha.34",
+  "gameMetadataRelease": "0.1.0-alpha.36",
   "publicAcceptance": "pending",
   "requiredAcceptance": [
     "freshClone",
@@ -14,7 +14,7 @@
     "compatibleUpdate",
     "distributionReview"
   ],
-  "sdkContract": 39,
+  "sdkContract": 40,
   "status": "candidate",
-  "version": "0.1.0-preview.1"
+  "version": "0.1.0-preview.2"
 }

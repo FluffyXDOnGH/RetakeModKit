@@ -15,6 +15,8 @@
 #include "HAL/FileManager.h"
 #include "Interfaces/IPluginManager.h"
 #include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
+#include "Misc/ScopeExit.h"
 #include "Misc/PackageName.h"
 #include "Misc/Parse.h"
 #include "Modules/ModuleManager.h"
@@ -30,8 +32,9 @@ int32 URetakeWeaponPoseBakeCommandlet::Main(const FString& Params)
 {
     const auto Fail=[](const FString& Error)
     {UE_LOGF(LogRetakeMapSDK,Error,"event=WeaponPoseBakeFailed reason=\"%ls\"",*Error);return 1;};
-    FString Request,Text,Owner,BasisPath,OutputPath,Selected,Rebuild;
+    FString Request,Text,Owner,BasisPath,OutputPath,Selected,Rebuild,ExplicitBasis;
     FParse::Value(*Params,TEXT("Mod="),Selected);
+    FParse::Value(*Params,TEXT("Basis="),ExplicitBasis);
     const bool bRequest=FParse::Value(*Params,TEXT("Request="),Request);
     const bool bRebuild=FParse::Value(*Params,TEXT("Contribution="),Rebuild);
     if(FParse::Param(*Params,TEXT("AllProfiles")))
@@ -48,9 +51,11 @@ int32 URetakeWeaponPoseBakeCommandlet::Main(const FString& Params)
             Catalogue.Reset(Cast<URetakeWeaponPack>(Asset.GetAsset()));
         }
         FString Error;
-        if(!Catalogue||Catalogue->PackId!=Selected||!Catalogue->Validate(Error))return Fail(TEXT("Missing or invalid owned weapon catalogue: ")+Error);
+        TArray<FRetakeWeaponPackProfile> Planned;
+        if(!Catalogue||Catalogue->PackId!=Selected||!RetakeWeaponPosePreparation::PlanProfiles(*Catalogue,Planned,Error))
+            return Fail(TEXT("Missing or invalid owned weapon catalogue: ")+Error);
         TMap<FSoftObjectPath,TArray<FSoftObjectPath>> Contributions;
-        for(const auto& Profile:Catalogue->Profiles)
+        for(const auto& Profile:Planned)
         {
             auto& Required=Contributions.FindOrAdd(Profile.PoseContribution);
             for(const auto& Binding:Profile.Weapons)Required.AddUnique(Binding.Value);
@@ -59,9 +64,39 @@ int32 URetakeWeaponPoseBakeCommandlet::Main(const FString& Params)
         Outputs.Sort([](const auto& A,const auto& B){return A.ToString().ToLower()<B.ToString().ToLower();});
         for(const auto& Output:Outputs)
         {
-            if(Main(FString::Printf(TEXT("-Mod=%ls -Contribution=\"%ls\""),*Selected,*Output.ToString()))!=0)return 1;
+            auto* Existing=Cast<URetakeWeaponPoseContribution>(Output.TryLoad());
+            TStrongObjectPtr<URetakeWeaponPoseBasis> Basis(RetakeWeaponPosePreparation::FindBasis(Selected,FSoftObjectPath(ExplicitBasis),Existing,Error));
+            if(!Basis)return Fail(Error);
+            const auto* Recipe=Existing?Cast<URetakeWeaponPoseRecipe>(Existing->AuthoringRecipe):nullptr;
+            const auto& Required=Contributions.FindChecked(Output);
+            if(Existing&&Recipe&&Recipe->Basis.Get()==Basis.Get()
+                &&RetakeWeaponPosePreparation::ValidateSources(Selected,*Existing,Error,Required))
+            {
+                UE_LOGF(LogRetakeMapSDK,Display,"event=WeaponPreparationSkipped contribution=%ls reason=current",*Output.ToString());
+                continue;
+            }
+            auto Job=MakeShared<FJsonObject>();Job->SetStringField(TEXT("owner"),Selected);
+            Job->SetStringField(TEXT("basis"),Basis->GetPathName());Job->SetStringField(TEXT("output"),Output.ToString());
+            Job->SetStringField(TEXT("expectedBodyIdentity"),Basis->Body.ComputeIdentity());
+            TArray<TSharedPtr<FJsonValue>> Sources;
+            for(const auto& Source:Required)Sources.Add(MakeShared<FJsonValueString>(Source.ToString()));
+            Job->SetArrayField(TEXT("specifications"),Sources);
+            FString Json;if(!FJsonSerializer::Serialize(Job,TJsonWriterFactory<>::Create(&Json)))return Fail(TEXT("Could not write preparation inputs."));
+            const FString Folder=FPaths::ProjectSavedDir()/TEXT("ModKit/PreparationRequests")/Selected;
+            IFileManager::Get().MakeDirectory(*Folder,true);
+            const FString JobPath=Folder/(FGuid::NewGuid().ToString(EGuidFormats::Digits)+TEXT(".json"));
+            ON_SCOPE_EXIT { IFileManager::Get().Delete(*JobPath); };
+            if(!FFileHelper::SaveStringToFile(Json,*JobPath,FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))return Fail(TEXT("Could not save preparation request."));
+            if(Main(FString::Printf(TEXT("-Mod=%ls -Request=\"%ls\""),*Selected,*JobPath))!=0)return 1;
             const auto* Data=Cast<URetakeWeaponPoseContribution>(Output.ResolveObject());
             if(!Data||!RetakeWeaponPosePreparation::ValidateSources(Selected,*Data,Error,Contributions.FindChecked(Output)))return Fail(Error);
+        }
+        bool Changed=false;
+        for(int32 Index=0;Index<Planned.Num();++Index)Changed|=Planned[Index].PoseContribution!=Catalogue->Profiles[Index].PoseContribution;
+        if(Changed)
+        {
+            Catalogue->Modify();Catalogue->Profiles=MoveTemp(Planned);Catalogue->MarkPackageDirty();
+            if(!UEditorLoadingAndSavingUtils::SavePackages({Catalogue->GetOutermost()},true))return Fail(TEXT("Prepared poses are saved, but the catalogue output bindings could not be saved."));
         }
         return 0;
     }

@@ -1,4 +1,29 @@
 {
   "format": 1,
-  "reviews": []
+  "reviews": [
+    {
+      "compatible": true,
+      "evidence": [
+        {
+          "hash": "8cc8f8f6f1b266da45ed39a552dc4f059476e92610ad2f012b969a88faeecdfe",
+          "path": "reviews/3299f4841f4f-alpha35-door-state-and-map-identities.json"
+        }
+      ],
+      "from": "3e4ae790ab49a7c3de3166fdf304b8562f71a65ebd1fc1a1b030f42c70b3f853",
+      "reviewType": "SDK40 resource additions plus persistent door-state repairs and consistent map-ID validation",
+      "to": "3299f4841f4f21e89f96e15d2210dc5c564249f8929f5ff1bfc0f7df571c14bf"
+    },
+    {
+      "compatible": true,
+      "evidence": [
+        {
+          "hash": "8cc8f8f6f1b266da45ed39a552dc4f059476e92610ad2f012b969a88faeecdfe",
+          "path": "reviews/3299f4841f4f-alpha35-door-state-and-map-identities.json"
+        }
+      ],
+      "from": "5419d78fc7810348f2baba0198e3c90f283856c8fc2ad095167f23feb289f9cf",
+      "reviewType": "SDK40 resource additions plus persistent door-state repairs and consistent map-ID validation",
+      "to": "3299f4841f4f21e89f96e15d2210dc5c564249f8929f5ff1bfc0f7df571c14bf"
+    }
+  ]
 }

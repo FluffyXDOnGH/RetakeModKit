@@ -138,12 +138,15 @@ bool FRetakeModManifest::Validate(FString& OutError) const
     TSet<FString> MapIds;
     for (const FRetakeModMap& Map : Maps)
     {
-        if (!Map.MapId.StartsWith(ModId + TEXT(".")) || Map.MapId.Len() > 64 || MapIds.Contains(Map.MapId))
+        // Runtime map identities are FNames. Reject case-only aliases before mounting,
+        // without changing the case-sensitive package paths carried by the manifest.
+        const FString Identity = Map.MapId.ToLower();
+        if (!Map.MapId.StartsWith(ModId + TEXT(".")) || Map.MapId.Len() > 64 || MapIds.Contains(Identity))
             { OutError = FString::Printf(TEXT("map id '%s' must be unique, start with '%s.' and be at most 64 characters"), *Map.MapId, *ModId); return false; }
         for (TCHAR C : Map.MapId)
             if (C > 127 || !(FChar::IsAlnum(C) || C == TEXT('_') || C == TEXT('.') || C == TEXT('-')))
                 { OutError = FString::Printf(TEXT("map id '%s' has an invalid character"), *Map.MapId); return false; }
-        MapIds.Add(Map.MapId);
+        MapIds.Add(Identity);
         if (!Map.PackageName.StartsWith(Root, ESearchCase::CaseSensitive) || !FPackageName::IsValidTextForLongPackageName(Map.PackageName))
             { OutError = FString::Printf(TEXT("map package '%s' is outside %s"), *Map.PackageName, *Root); return false; }
         if (!IsValidDisplayName(Map.DisplayName)) { OutError = FString::Printf(TEXT("map '%s' needs a safe display name"), *Map.MapId); return false; }

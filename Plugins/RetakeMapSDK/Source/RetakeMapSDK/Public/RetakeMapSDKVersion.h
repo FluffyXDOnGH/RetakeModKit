@@ -12,7 +12,7 @@
 namespace RetakeMapSDK
 {
     /** Element, link and manifest contract of the SDK classes that maps contain. */
-    inline constexpr int32 ContractVersion = 39; // Explicit map-owned minefield presentation; no implicit weapon resource lookup.
+    inline constexpr int32 ContractVersion = 40; // Add independent base-game frag/smoke resource IDs; contract 39 remains readable.
     /** Raise only when a reviewed breaking change makes older tagged maps unreadable or changes their meaning. */
     inline constexpr int32 OldestReadableContract = 39; // Unpublished baseline: old minefields borrowed weapon resources that no longer exist.
     /** Weapon exports use the same fresh development baseline; prior experimental revisions require re-export. */

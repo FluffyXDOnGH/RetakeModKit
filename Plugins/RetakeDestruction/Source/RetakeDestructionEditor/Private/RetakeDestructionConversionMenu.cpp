@@ -63,11 +63,10 @@ void OpenDoor()
     ARetakeDoor* Door=SelectedDoor();FString Reason;
     if (!URetakeDestructionConversion::CanConvertDoorLeaf(Door,Reason)) {FMessageDialog::Open(EAppMsgType::Ok,FText::FromString(Reason));return;}
     auto Data=MakeShared<FStructOnScope>(FRetakeDestructionConversionOptions::StaticStruct());
-    // Wooden doors break like the wooden walls (Stalingrad's cover), with planks a bullet can chip out.
+    // The converter creates its own wood defaults under the destination content root.
     auto& Defaults=*reinterpret_cast<FRetakeDestructionConversionOptions*>(Data->GetStructMemory());
     // The conversion anchors the leaf's hinge strip itself, so the leaf hangs from the first physics frame.
     Defaults.AssetName=TEXT("WoodDoor");Defaults.Fracture.FragmentCount=24;Defaults.bOpenFractureEditor=false;
-    Defaults.Preset=LoadObject<URetakeDestructionDefinition>(nullptr,TEXT("/Game/Retake/Destruction/Definitions/DA_Destruction_Wall_Wood.DA_Destruction_Wall_Wood"));
     const TWeakObjectPtr<ARetakeDoor> WeakDoor(Door);
     OpenDialog(TEXT("Convert door leaf to Retake destructible"),TEXT("Make ")+Door->GetActorLabel()+
         TEXT("'s leaf destructible: holes can be shot through it, it swings with the door, and enough damage drops it."),

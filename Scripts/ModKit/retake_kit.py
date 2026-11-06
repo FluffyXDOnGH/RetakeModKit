@@ -516,9 +516,9 @@ def verify_export(folder):
     ids = set()
     for entry in manifest['maps']:
         map_id = entry.get('mapId')
-        if not isinstance(map_id, str) or not re.fullmatch(re.escape(manifest['modId']) + r'\.[A-Za-z0-9_.-]+', map_id) or len(map_id) > 64 or map_id in ids:
+        if not isinstance(map_id, str) or not re.fullmatch(re.escape(manifest['modId']) + r'\.[A-Za-z0-9_.-]+', map_id) or len(map_id) > 64 or map_id.casefold() in ids:
             raise ValueError('Invalid or duplicate map ID')
-        ids.add(map_id)
+        ids.add(map_id.casefold())
         display = entry.get('displayName')
         if not isinstance(display, str) or not display.strip() or len(display.encode('utf-16-le')) // 2 > 64 or any(ord(c) < 32 or ord(c) == 127 or c in '"\\?=' for c in display):
             raise ValueError('Map display name is missing or invalid')
@@ -791,14 +791,21 @@ def recook(kit, engine, archive_path, revision, candidate=False):
             remove_generated(kit, temporary)
     # Use this kit's CURRENT qualified SDK/config. Historical metadata is evidence, not permission to overwrite the kit.
     kind = read(destination / f'{mod}.uplugin').get('RetakeModKind', 'map')
-    if kind == 'weapons':
-        commandlet(kit, engine, 'RetakeWeaponPoseBake', f'-Mod={mod}', '-AllProfiles')
-    elif kind == 'map':
-        commandlet(kit, engine, 'RetakeAcousticsBake', f'-Mod={mod}')
-        commandlet(kit, engine, 'RetakeMinimapBake', f'-Mod={mod}')
-    else:
-        raise ValueError('The recovered mod kind has no supported recook workflow')
-    return export(kit, engine, mod, revision, candidate=candidate)
+    try:
+        if kind == 'weapons':
+            commandlet(kit, engine, 'RetakeWeaponPoseBake', f'-Mod={mod}', '-AllProfiles')
+        elif kind == 'map':
+            # The shared readiness workflow preserves current custom artwork and
+            # only regenerates required data. Stale custom alignment needs author review.
+            prepare_maps(kit, engine, mod)
+        else:
+            raise ValueError('The recovered mod kind has no supported recook workflow')
+        return export(kit, engine, mod, revision, candidate=candidate)
+    except (ValueError, RuntimeError, OSError) as error:
+        preparation = 'prepare-weapons --all-profiles' if kind == 'weapons' else 'prepare'
+        raise RuntimeError(f'Editable source was restored to {destination} and has been kept. {error} '
+                           f'Continue in that workspace with {preparation} --mod {mod}, then '
+                           f'export --mod {mod} --revision {revision}. Do not extract the archive again.') from error
 
 
 def validate_descriptor(path, expected_kind=None):
@@ -1082,7 +1089,7 @@ def launch_test(kit, export_dir, game, mods_dir, map_name=None, mode=None, serve
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['discover', 'setup', 'build', 'doctor', 'contract', 'record', 'create', 'example', 'status', 'draft-status', 'prepare', 'prepare-weapons', 'validate', 'minimap', 'acoustics', 'geometry', 'visibility', 'export', 'install', 'test', 'start-test-server', 'test-info', 'server-status', 'stop-test-server', 'recook', 'qualify'])
+    parser.add_argument('command', choices=['discover', 'setup', 'build', 'doctor', 'contract', 'record', 'create', 'example', 'weapon-basis', 'status', 'draft-status', 'prepare', 'prepare-weapons', 'validate', 'minimap', 'acoustics', 'geometry', 'visibility', 'export', 'install', 'test', 'start-test-server', 'test-info', 'server-status', 'stop-test-server', 'recook', 'qualify'])
     parser.add_argument('--kit', type=Path, default=Path(__file__).resolve().parents[2])
     parser.add_argument('--engine', type=Path)
     parser.add_argument('--mod')
@@ -1191,6 +1198,11 @@ def main():
             if args.kind != 'map' and args.template != 'Empty': raise ValueError('Level templates apply only to map mods')
             options = ['-Basic'] if args.template == 'Basic' else []
             commandlet(kit, engine, 'RetakeModCreate', f'-Name={args.mod}', f'-Kind={args.kind}', *options)
+        elif args.command == 'weapon-basis':
+            if not args.mod or not MOD.fullmatch(args.mod): raise ValueError('--mod must name a weapon workspace')
+            validate_descriptor(kit / 'Mods' / args.mod / f'{args.mod}.uplugin', expected_kind='weapons')
+            commandlet(kit, engine, 'pythonscript', f'-Mod={args.mod}',
+                       f'-script={kit / "Scripts/ModKit/retake_weapon_basis.py"}', f'-RetakeBasisMod={args.mod}', rendering=True)
         elif args.command == 'example':
             if not args.mod or not MOD.fullmatch(args.mod): raise ValueError('--mod must name a new example workspace')
             if args.kind not in ('map', 'weapons'):

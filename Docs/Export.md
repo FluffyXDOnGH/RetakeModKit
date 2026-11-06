@@ -1,6 +1,6 @@
 # Export and test
 
-Setup includes the verified game cook registries and compatibility metadata required by this kit release. Creators never run the studio's `stage-sdk`, `stage-game` or migration tools.
+The kit includes the game cook registries and compatibility metadata used by its tools. Creators never run the studio's `stage-sdk`, `stage-game` or migration tools.
 
 After saving and preparing your content:
 
@@ -22,4 +22,4 @@ Run recovery from a separate clean copy of the kit, with no existing workspace o
 
 Use the Retake test action or `test-info` to select an existing compatible client and server. CLI discovery and launch options are documented by `retake_kit.py --help`; a local Linux server test uses WSL and an existing server package. The kit does not build game executables. Testing may require a controlled game restart to change an already mounted revision.
 
-Do not use `--candidate` or `-RetakeModQualification` to distribute community mods. Those options are studio diagnostics for unqualified engine pairs. Normal public exports must pass the reviewed compatibility records.
+Use the normal export and test actions. They check preparation, dependencies and compatibility before a mod can be loaded by Retake.

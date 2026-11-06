@@ -1,5 +1,5 @@
 {
-  "contractVersion": 39,
+  "contractVersion": 40,
   "delivery": "source",
   "format": 1,
   "oldestReadableContract": 39,
@@ -14,10 +14,10 @@
   },
   "schemaVersion": 3,
   "shipped": {
-    "release": "0.1.0-alpha.34",
+    "release": "0.1.0-alpha.36",
     "targets": [
       {
-        "baseRegistryHash": "282b143564c0bdeca9c9db9b976be5fbb942126a2bf02d49ebebdf33ed3f56bb",
+        "baseRegistryHash": "3e1647c2e6e8c906efa81ca7ca6b9dd5f50fd6e72a2f9e9f8fb2795191d3d874",
         "consumerRecord": "fae031beeb202ad206eaa0b1bc08b2513989d23dff2ce78cfb37cced13f6b37d",
         "name": "Windows",
         "packages": [
@@ -516,6 +516,8 @@
           "CommonConversationRuntime",
           "CommonInput",
           "CommonUI",
+          "CompetitionCore",
+          "CompetitionHttp",
           "CompositeCore",
           "ComputeDataInterface",
           "ComputeFramework",
@@ -561,6 +563,7 @@
           "FullBodyIK",
           "FunctionalTesting",
           "GLTFExporter",
+          "GameCompetition",
           "GameFeatures",
           "GameOnlineServices",
           "GameplayAbilities",
@@ -830,7 +833,7 @@
         ]
       },
       {
-        "baseRegistryHash": "6ded3055ba7c524f049f39f0948b80f481aac928abfd8e67e93f88aa2df4f7c4",
+        "baseRegistryHash": "b13e9ffa3411a3bd9b0c2bcfb65771cedf58b4ea3a8ea43e6d7e9350481e1990",
         "consumerRecord": "7d464772fce8894b43c6b01d9105ba8351cd09220426ccf9e2dfb2b80eae80a0",
         "name": "LinuxServer",
         "packages": [
@@ -1304,6 +1307,8 @@
           "CommonConversationRuntime",
           "CommonInput",
           "CommonUI",
+          "CompetitionCore",
+          "CompetitionHttp",
           "CompositeCore",
           "ComputeDataInterface",
           "ComputeFramework",
@@ -1349,6 +1354,7 @@
           "FullBodyIK",
           "FunctionalTesting",
           "GLTFExporter",
+          "GameCompetition",
           "GameFeatures",
           "GameOnlineServices",
           "GameplayAbilities",
@@ -1612,5 +1618,5 @@
       }
     ]
   },
-  "sourceHash": "3e4ae790ab49a7c3de3166fdf304b8562f71a65ebd1fc1a1b030f42c70b3f853"
+  "sourceHash": "3299f4841f4f21e89f96e15d2210dc5c564249f8929f5ff1bfc0f7df571c14bf"
 }

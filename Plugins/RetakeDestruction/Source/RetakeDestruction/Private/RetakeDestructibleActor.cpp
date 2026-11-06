@@ -134,6 +134,17 @@ void URetakeGeometryCollectionComponent::InitializeCollection(URetakeDestruction
         OnRep_RepStateData();OnRep_RepDynamicData();
     }
 }
+void URetakeGeometryCollectionComponent::OnCreatePhysicsState()
+{
+    Super::OnCreatePhysicsState();
+    if (auto* Actor=Cast<ARetakeDestructibleActor>(GetOwner()); Actor && HasValidPhysicsState())
+    {
+        // OnRep/BeginPlay can precede physics creation. Do not consume a pending snapshot once and lose it, or destroy
+        // a newly created proxy from inside this callback when the snapshot says the collection is already cleared.
+        Actor->GetWorldTimerManager().ClearTimer(Actor->PhysicsStateRefreshTimer);
+        Actor->PhysicsStateRefreshTimer=Actor->GetWorldTimerManager().SetTimerForNextTick(Actor,&ARetakeDestructibleActor::RefreshPhysicsState);
+    }
+}
 void URetakeGeometryCollectionComponent::DispatchUniqueField(const FFieldSystemCommand& Command)
 {
     check(IsInGameThread());
@@ -318,7 +329,7 @@ void ARetakeDestructibleActor::BeginPlay()
 }
 void ARetakeDestructibleActor::EndPlay(const EEndPlayReason::Type Reason)
 {
-    GetWorldTimerManager().ClearTimer(SettleTimer);
+    GetWorldTimerManager().ClearAllTimersForObject(this);
     GetWorldTimerManager().ClearAllTimersForObject(Geometry);
     StopCollisionAudio();
     StopDebrisTracking();
@@ -359,12 +370,28 @@ void ARetakeDestructibleActor::ApplyCollectionShatterState()
     Geometry->RemoveAllAnchors();
     if (GetNetMode()!=NM_Client && !GetWorld()->IsPlayingReplay()) Geometry->CrumbleActiveClusters();
 }
+void ARetakeDestructibleActor::RefreshPhysicsState()
+{
+    if (!HasActorBegunPlay() || IsActorBeingDestroyed() || !bConfigured) return;
+    if (bCleared) {AttachToDoor();ApplyFractureState();return;}
+    if (!Geometry->HasValidPhysicsState()) return;
+    // These flags describe work on a specific proxy. A recreated proxy needs the same persistent state projected again.
+    bRootYieldApplied=false;bJoinStateApplied=false;bDoorLeaf=false;
+    AppliedCollisionMask.Reset(Definition->PreparedTransformCount);
+    CaptureRestPose();ApplyReleasedCollision();RemoveGonePiecesOnJoin();ApplyFractureState();ApplyRootYield();
+    AttachToDoor();ApplyCollectionShatterState();
+}
 void ARetakeDestructibleActor::AttachToDoor()
 {
     ARetakeDoor* Door=Placement ? Placement->Door.Get():nullptr;
-    if (bDoorLeaf || !bConfigured || bCleared || !Door || !Door->DoorPivot || !HasActorBegunPlay()) return;
-    // Anchoring needs the physics proxy; a collection still creating it tries again next frame.
-    if (!Geometry->HasValidPhysicsState()) {GetWorldTimerManager().SetTimerForNextTick(this,&ThisClass::AttachToDoor);return;}
+    if (!bConfigured || !Door || !Door->DoorPivot || !HasActorBegunPlay()) return;
+    // A cleared snapshot intentionally has no physics to attach. It still owns the door's visual leaf: otherwise a
+    // reconnect/late join leaves the map's original static mesh visible after its collection has disappeared.
+    Door->HandOverLeaf();
+    if (HasAuthority() && (bCleared || bDoorCollapsed)) Door->BreakLeaf();
+    if (bDoorLeaf || bCleared) return;
+    // Physics creation schedules RefreshPhysicsState; unresolved placement references have their own OnRep.
+    if (!Geometry->HasValidPhysicsState()) return;
     bDoorLeaf=true;
     // The leaf's offset from the hinge comes from the door's closed pose, so a leaf spawned while the door stands open (a round
     // reset ordered before the door's own) still hangs right.
@@ -383,7 +410,6 @@ void ARetakeDestructibleActor::AttachToDoor()
     else Strip.Max[Long]=Local.Min[Long]+Edge;
     Geometry->SetAnchoredByTransformedBox(Strip,GetActorTransform(),true);
     if (bDoorCollapsed) Geometry->RemoveAllAnchors();
-    Door->HandOverLeaf();
 }
 void ARetakeDestructibleActor::TryCollapseDoorLeaf()
 {
@@ -620,6 +646,7 @@ void ARetakeDestructibleActor::HandleFullyDecayed()
 }
 void ARetakeDestructibleActor::FinishClearedState()
 {
+    AttachToDoor(); // Full decay also clears the pawn body, even if it overtook the collapse-counting timer.
     ApplyFractureState();
     if (auto* System=GetWorld()->GetSubsystem<URetakeDestructionSubsystem>()) System->NotifyStructureChanged();
     ForceNetUpdate();SetNetDormancy(DORM_DormantAll);

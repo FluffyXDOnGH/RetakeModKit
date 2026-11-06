@@ -1,9 +1,9 @@
 {
-  "contentHash": "48d7aaf10e1df15b964abff5930fb41c201d21050abbcd12545623ee7b69654d",
+  "contentHash": "a2e1cf16d1dcdee403b3755dbe83f8ab35da4f1845fb30053a1503cee6d29638",
   "files": {
     ".gitattributes": {
-      "sha256": "13244859cc7351a04403dd55ac653feaf11d6bfcbc6cbe0d6a1827a00c1be013",
-      "size": 306
+      "sha256": "512bbff27679b115d100d0d1c83329e46c7f3843dc8e6ad9602e70396bb98f96",
+      "size": 285
     },
     ".gitignore": {
       "sha256": "36ae2a3f0d0849982686288ca2375cdbb998262a14e4aed306ee95f11071507f",
@@ -26,16 +26,16 @@
       "size": 0
     },
     "Docs/Compatibility.md": {
-      "sha256": "a22f3f6750a542db22a05214b5d5307bd85aa9f274866173337f9fccf1934000",
-      "size": 2373
+      "sha256": "2e7e9c715c5300d717169d3ec60a4d204e19b60171d8688a7aceb9a4b2c0f15f",
+      "size": 1940
     },
     "Docs/Content.md": {
-      "sha256": "f6274bcb20a5c73cbd9a31c91294bdd425dc6a3c5a11cb354ad29e612ff454ea",
-      "size": 1125
+      "sha256": "f467da6bf7df1391ade308dace98ca69698b5b66772ecdf1d5063deb29135c9a",
+      "size": 997
     },
     "Docs/Export.md": {
-      "sha256": "985b64db5d3438271bc6ec4623195a3216b8dc29670fca23041400b8f25b69b8",
-      "size": 2367
+      "sha256": "6e15d159b091ab34bdf89bde74fc071adcdc83736bdc4eaee3eb36ef4c382f4b",
+      "size": 2263
     },
     "Docs/Images/retake-modkit-banner.png": {
       "sha256": "18367e5b1d34e6864dede52aae725902fcef376636371dcd44bb749ab777f3df",
@@ -46,8 +46,8 @@
       "size": 2265
     },
     "Docs/Weapons.md": {
-      "sha256": "4b425b555f4cb379a64ef1bf54b4c7a7cda8f16e39b0f2df31369251646caeb0",
-      "size": 3075
+      "sha256": "a2d8d894ff665e869a930557b43f3752082237b4418a13e53d1ac0f02ac099fe",
+      "size": 3422
     },
     "Examples/Weapons/SourceArt/BodyContract.json": {
       "sha256": "f4541c1ca0328da36ca0b3c8e4e4f6c5c80326c692c19223956ae238cc10e24d",
@@ -94,12 +94,12 @@
       "size": 1347
     },
     "ModKit/BaseCook/LinuxServer/AssetRegistry.bin": {
-      "sha256": "81d4ebd53c5bab8a01a33c0a06b3fb2872e7a6bcf81e2fd7892b71f1ea8f62ea",
-      "size": 255988
+      "sha256": "8e472d2e49ad03d9c3727c2e977545e5cfd5d426e4b4b6fcd845558e035cab92",
+      "size": 256312
     },
     "ModKit/BaseCook/Windows/AssetRegistry.bin": {
-      "sha256": "1d128ae66d26e5fd8f8027192df5512ee52b18b57a5f2b688beed33393897e18",
-      "size": 260208
+      "sha256": "dccb8efb1af48b4fc8e1e2ade43bbc9bb7c16765c438d6b49af95bd4dc24e226",
+      "size": 260532
     },
     "ModKit/Content.json": {
       "sha256": "ca850426e5d8a5e12875b0b880b4b10baf81074a7f4e147fef7a5a2ae80ce65a",
@@ -122,8 +122,8 @@
       "size": 753
     },
     "Notices/ThirdParty.md": {
-      "sha256": "0027da317546f6952a3ea80ee31457b85591bccbf4dea9358b442189a5a275c8",
-      "size": 1448
+      "sha256": "582cf3cc9b8ee0d1803b2176e2d3bda5ccff7ac2822dcc0e381b1e48fdf75cf4",
+      "size": 1435
     },
     "Open-ModKit.ps1": {
       "sha256": "55f73ae9fa76510a179a4e5d731003cd178c1843e4eab9de3dc939e6b80330c2",
@@ -134,8 +134,8 @@
       "size": 915
     },
     "Plugins/RetakeDestruction/Source/RetakeDestruction/Private/RetakeDestructibleActor.cpp": {
-      "sha256": "ccfff7d0ba27cd2d20f0d9f54c1f9fcd626ab2b40dbcb82a151b7154c2a098fd",
-      "size": 64027
+      "sha256": "320ab1fd51c4966a65f9ee930d3a90a6d918f49224dc6fd0ef7fd804302663ee",
+      "size": 65744
     },
     "Plugins/RetakeDestruction/Source/RetakeDestruction/Private/RetakeDestructiblePlacement.cpp": {
       "sha256": "e09de6ec42890f712a10019e03926bebbd7dc7a58fe070f3944505aa103cf7fe",
@@ -158,8 +158,8 @@
       "size": 18328
     },
     "Plugins/RetakeDestruction/Source/RetakeDestruction/Public/RetakeDestructibleActor.h": {
-      "sha256": "7f9e17acb9631399b00691245e30dbd84d57f06033460ed373934944ede4dc18",
-      "size": 11435
+      "sha256": "6ed0a0cff0400ec92b5e21b8333171ee6a1e3e7e31b519d4cd614a5046906613",
+      "size": 11739
     },
     "Plugins/RetakeDestruction/Source/RetakeDestruction/Public/RetakeDestructiblePlacement.h": {
       "sha256": "61d30593b03479c288f4944d1254f0a2a73007076ac48e348d5c9900f2d4a162",
@@ -186,12 +186,12 @@
       "size": 914
     },
     "Plugins/RetakeDestruction/Source/RetakeDestructionEditor/Private/RetakeDestructionConversion.cpp": {
-      "sha256": "116cf624607762c3dcf2c12a754d38acb0800fa8c49e2360004b5fca5fa8c921",
-      "size": 34927
+      "sha256": "242156c4891fd249e7496065c568a13899a764cc7e82e7528297dccb9d4bb618",
+      "size": 35938
     },
     "Plugins/RetakeDestruction/Source/RetakeDestructionEditor/Private/RetakeDestructionConversionMenu.cpp": {
-      "sha256": "4dac56ce5eea39f8d0e5661ef07c8bf1c0a21eec55142c895bbafd1fbf51ae3c",
-      "size": 8019
+      "sha256": "d4605a17b2ea976148b75702507cdd4721185c52bbda829643185c02ef72ed30",
+      "size": 7835
     },
     "Plugins/RetakeDestruction/Source/RetakeDestructionEditor/Private/RetakeDestructionConversionMenu.h": {
       "sha256": "1b860fc429f5333212dd08952acba2ce5d23e9e5cd3cccecfe7290bd91d3b37a",
@@ -202,8 +202,8 @@
       "size": 536
     },
     "Plugins/RetakeDestruction/Source/RetakeDestructionEditor/Public/RetakeDestructionConversion.h": {
-      "sha256": "91819d4a71a58f11262260f80520507212c1ab73cdf203d97bbc7e6462ade21b",
-      "size": 4979
+      "sha256": "e31ec3e077756ea47f803cccb9f30c9a22f7f8c80b0ac5f4ff0f116d4cba5544",
+      "size": 5130
     },
     "Plugins/RetakeDestruction/Source/RetakeDestructionEditor/RetakeDestructionEditor.Build.cs": {
       "sha256": "78b4a78cf1602c080b3a6100356dc32d33a87b4f999a1e840b95d6e5581d0a90",
@@ -218,12 +218,12 @@
       "size": 314
     },
     "Plugins/RetakeMapSDK/Contract/RetakeMapSDK.contract.json": {
-      "sha256": "7b24e04421a885d3cdb77e25044fe1581276ea0170676fc38850a775f8953b37",
-      "size": 5747045
+      "sha256": "f60534d1c40b61e94f4af2df2a8784e1a466e36f51081596175f0174fc31ca87",
+      "size": 5798606
     },
     "Plugins/RetakeMapSDK/Contract/RetakeWeaponCatalogue.json": {
-      "sha256": "eebe5c6ba1094234df955ca6191e210bc7a17efb9aba6e6a7f0b7059b58f6979",
-      "size": 1368
+      "sha256": "4cb961fc50b2adcaeeb23ec13cbf4b911f9bd56bad029de263465a016bc5bc3e",
+      "size": 1584
     },
     "Plugins/RetakeMapSDK/Contract/base-content/LinuxServer-23.json": {
       "sha256": "ebdcad831f8888e7805f3f51f5be2ab37abc76b85507a6502be29c75c0ec62e0",
@@ -266,12 +266,24 @@
       "size": 34058
     },
     "Plugins/RetakeMapSDK/Contract/behavior-reviews.json": {
-      "sha256": "fd7c5cefcca9c49621b41fe6d1df3de4d1514e28bf545028e3a0b084bd1a5558",
-      "size": 35
+      "sha256": "d1fd397ea23f3b2f73a36d69e52769e76cd87e466a3e0131fe376081abff734d",
+      "size": 1107
     },
     "Plugins/RetakeMapSDK/Contract/releases/39.json": {
       "sha256": "7b24e04421a885d3cdb77e25044fe1581276ea0170676fc38850a775f8953b37",
       "size": 5747045
+    },
+    "Plugins/RetakeMapSDK/Contract/releases/40.json": {
+      "sha256": "f12c59ea9f947a3afb43bc3d937d796001821a8ee54026cb7543d82e09fc2123",
+      "size": 5798606
+    },
+    "Plugins/RetakeMapSDK/Contract/reviews/3299f4841f4f-alpha35-door-state-and-map-identities.json": {
+      "sha256": "4d98af9d6ae7b215fec0e4ab614f5191025c5a381b858a950e20887fc4ae9d94",
+      "size": 1542
+    },
+    "Plugins/RetakeMapSDK/Contract/reviews/5419d78fc781-base-grenade-resources40.json": {
+      "sha256": "3ce18669e978aa404db52d73bdef51bffbc2fddf45d62d4ce6aadf242e4c3d54",
+      "size": 1195
     },
     "Plugins/RetakeMapSDK/RetakeMapSDK.uplugin": {
       "sha256": "94e2452212922a5caeb052037643eaa6ee6c00ecf54af22a0e52b15b29b4bbf7",
@@ -314,8 +326,8 @@
       "size": 3767
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDK/Private/RetakeDoor.cpp": {
-      "sha256": "aaa3291839142cb02d56059742fdc68434ea2b2950aea1c232dad2381b97b6d1",
-      "size": 21207
+      "sha256": "58fee8d73cb81c9558b43a33de744568bf60d05ea344eb6b6da7b56e53fac4bd",
+      "size": 21903
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDK/Private/RetakeFreezeTagRelay.cpp": {
       "sha256": "3d9b0e0660a001c238757a65ae038dfff26bb495e1943a0d64a0f28c22b50850",
@@ -334,12 +346,12 @@
       "size": 2087
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDK/Private/RetakeMapSDKIds.cpp": {
-      "sha256": "4421a6988461fdc006817ad598fd605fa76f915e4623b7f7cd62f4207490b1bd",
-      "size": 991
+      "sha256": "767583099432a8c08945e43b960f8735a4908d9742c5886cb352603170cff0f8",
+      "size": 1039
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDK/Private/RetakeMapSDKManifest.cpp": {
-      "sha256": "95ac2c471c176c6fdaba85b8a9821f91d42f4e83b2dbabddf38e41ecaf8b1d16",
-      "size": 21772
+      "sha256": "89ea851cc4530b02e1deaf54d97bffee02454c2b513c1e666b9bf6e9309d7f0f",
+      "size": 21998
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDK/Private/RetakeMapSDKModeRequirements.cpp": {
       "sha256": "4833be34705fdfba5563c94779771d96c246b6969afbaa243fa0b8fb37dfa970",
@@ -510,8 +522,8 @@
       "size": 3502
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDK/Public/RetakeDoor.h": {
-      "sha256": "79c1af8b683f8d7bc4ccc28ff6af94b269e2177995ce9dd4d33a16278c70eb3b",
-      "size": 14669
+      "sha256": "d1b071d56fa388b8dd4a7f6a56bc262c841b8f33c8a74e9f2b6beb72ed480cfe",
+      "size": 14861
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDK/Public/RetakeEquipmentUseTarget.h": {
       "sha256": "3b70c899fdbc774207170935cb09fe47f4f21f51f0c54c8020863c49432a33a0",
@@ -562,8 +574,8 @@
       "size": 1337
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDK/Public/RetakeMapSDKVersion.h": {
-      "sha256": "a0cf28199e2eaaf0a890bf4317264b8befdcabea2d99195848a1967b320afe68",
-      "size": 1957
+      "sha256": "f1270e7d121dbf259d215d07c9a51c1e24d2728c8b6a40117df5f6d38d7f9e12",
+      "size": 1959
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDK/Public/RetakeMapSettings.h": {
       "sha256": "9e726933a35f5201617648703b45f953a2ba9aa268b66b2b580d8a44fc293fab",
@@ -726,16 +738,16 @@
       "size": 1076
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDKEditor/Private/RetakeWeaponPoseBakeCommandlet.cpp": {
-      "sha256": "efa92fd3db2664afb4e047316661c0fb90213b073073ca125d14c85c6b7988f6",
-      "size": 10985
+      "sha256": "73e0fd60dc053b962c0758b1e182e132d0ba9d01b4f37ef56c949b24905e6164",
+      "size": 13692
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDKEditor/Private/RetakeWeaponPoseBasis.cpp": {
       "sha256": "f7ccdd07e942c0c51d74862c265acfd7333b8fd2320e3c760067e19a5a1ee555",
       "size": 692
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDKEditor/Private/RetakeWeaponPoseRecipe.cpp": {
-      "sha256": "4134bca3c79ba071d5bf15b8a6beb05da769cfcd412a5b6f475955bd3007941e",
-      "size": 5220
+      "sha256": "0235ed06ae968cfbf94e62b2c7c730bec5f9951b62a9b797540df26c39bb1d7c",
+      "size": 7878
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDKEditor/Public/RetakeMapSDKCommandlets.h": {
       "sha256": "3d43a15f4f2d587bf14ec08cf62a28ae24c18d56120cdc81019ff2144ffcbfb8",
@@ -758,24 +770,24 @@
       "size": 1865
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDKEditor/Public/RetakeWeaponPoseRecipe.h": {
-      "sha256": "3ccfd62b11644e5b70c42bf520a6de9d35be3f6364c23d9cea93578e80806050",
-      "size": 1219
+      "sha256": "c47ad990c195a689bb2636f1be4014686a6169f8f80fb593453bd6aaacafa9cb",
+      "size": 1865
     },
     "Plugins/RetakeMapSDK/Source/RetakeMapSDKEditor/RetakeMapSDKEditor.Build.cs": {
       "sha256": "e786156c8a1f5f3b66b7c2b58c2b10615a843a2d3f73d4e272f9bcf1ea5bebcd",
       "size": 1013
     },
     "README.md": {
-      "sha256": "5bbf26de8923c49a7dcb2265cf40128881d4ef4500481cda29e63827dc3781ad",
-      "size": 2100
+      "sha256": "f803b6a77975a91dc3fd1166f8bbed962146f4eda9116d9ef23fd07cb8d67831",
+      "size": 1940
     },
     "RetakeModKit.uproject": {
       "sha256": "596d7f0f7f9bd0c485a294f8aef5cf53edba3b25c15cf3c312957fcffd17d3fb",
       "size": 1482
     },
     "SDK.lock.json": {
-      "sha256": "220fd82fdbc64dc2dafba3bfc92138d6c640e2e84e4e7bd58c2a31d50c4efe32",
-      "size": 75898
+      "sha256": "5feb7e8edcd9368b7ac37329f0ba2f01196afdf2dd57b748094f62c6029030bd",
+      "size": 76072
     },
     "Scripts/ModKit/publish_http.py": {
       "sha256": "81288a97020174c8b0efb2d5733fa76d94c9319f7ad0b553c6e37506d034de54",
@@ -806,8 +818,8 @@
       "size": 7189
     },
     "Scripts/ModKit/retake_kit.py": {
-      "sha256": "e5e71b770ccff951dbd8a7f28e62a20d26be690dde4f35e5f0d55bf05e636b2d",
-      "size": 80639
+      "sha256": "c5ae4f75a0657adaf61589e6955fb02a2cf46279bcb14ab336ea08081e878a87",
+      "size": 81719
     },
     "Scripts/ModKit/retake_setup.py": {
       "sha256": "146210d45e32b0468a0714adfe714fd51a8c4718b5ff63424238affd64e1a7be",
@@ -829,9 +841,13 @@
       "sha256": "328c14d4a6b8d2431019bb3df646f82f5cab10969637597fa05b9b8bd40adb36",
       "size": 9739
     },
+    "Scripts/ModKit/retake_weapon_basis.py": {
+      "sha256": "061f4fe4149f0ffe7e247637f982e7ab55dc5c0847a327b99ce62b7465b96a68",
+      "size": 10713
+    },
     "Scripts/ModKit/retake_weapon_example.py": {
-      "sha256": "d005fc80908ed93fa60b19a1f7e9c36b8d4c391c1679554ab917a1d9adeef7ab",
-      "size": 17780
+      "sha256": "d137d66cf70c61ef302bd0c819b025d6d21989bc3d1dca82b588a2f32ac18d48",
+      "size": 13044
     },
     "Scripts/Visibility/audit_lod_coverage.py": {
       "sha256": "48537dc1e1e42dbd1d9571044f0fc20762e6f0f84f9b953a638844e8f4b72ffc",

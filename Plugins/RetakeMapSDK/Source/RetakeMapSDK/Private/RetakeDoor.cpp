@@ -155,7 +155,7 @@ void ARetakeDoor::BeginPlay()
 	Super::BeginPlay();
 	ApplyDoorSize();
 	ClosedRotation = DoorPivot->GetRelativeRotation();
-	LeafCollision = DoorMesh->GetCollisionEnabled();
+	CaptureLeafDefaults();
 	if (HasAuthority())
 	{
 		// Runtime state never comes from the asset: a placed door starts closed (or locked), whatever was serialized.
@@ -166,7 +166,8 @@ void ARetakeDoor::BeginPlay()
 	Progress = DoorState == ERetakeDoorState::Open ? 1.f : 0.f;
 	if (GetWorld()->IsPlayingReplay() && ReplayProgress >= 0.f) Progress = FMath::Clamp(ReplayProgress, 0.f, 1.f);
 	ApplyProgress();
-	SetActorTickEnabled(IsMoving());
+	UpdatePawnBlocking();
+	SetActorTickEnabled(!IsBroken() && (IsMoving() || !bLeafBlocksPawns));
 	URetakeMapElementSubsystem::Register(*this);
 }
 
@@ -314,11 +315,13 @@ void ARetakeDoor::SetLocked(bool bLocked)
 
 void ARetakeDoor::HandOverLeaf()
 {
+	CaptureLeafDefaults();
 	bLeafHandedOver = true;
 	// The leaf actor draws the leaf and answers shots, grenades and sight; DoorMesh keeps only the leaf's pawn body.
 	DoorMesh->SetVisibility(false);
 	DoorMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	DoorMesh->SetCollisionResponseToChannel(ECC_Pawn, bLeafBlocksPawns ? ECR_Block : ECR_Overlap);
+	UpdatePawnBlocking();
 }
 
 void ARetakeDoor::BreakLeaf()
@@ -473,9 +476,22 @@ void ARetakeDoor::PushPawnsOutOfLeaf(float YawDirection) const
 	}
 }
 
+void ARetakeDoor::CaptureLeafDefaults()
+{
+	if (bLeafDefaultsCaptured || !DoorMesh) return;
+	bLeafDefaultsCaptured = true;
+	bAuthoredLeafVisible = DoorMesh->IsVisible();
+	LeafCollision = DoorMesh->GetCollisionEnabled();
+}
+
 void ARetakeDoor::UpdatePawnBlocking()
 {
 	if (!DoorMesh) return;
+	CaptureLeafDefaults();
+	// Destruction is persistent state, not a cosmetic event a reconnecting client must have witnessed.
+	// A handed-over mesh remains hidden through round resets; its replacement collection draws the restored leaf.
+	const bool bVisible = bAuthoredLeafVisible && !bLeafHandedOver && !IsBroken();
+	if (DoorMesh->IsVisible() != bVisible) DoorMesh->SetVisibility(bVisible);
 	// A broken door has no leaf left to block anything; the round reset brings the authored collision back.
 	const ECollisionEnabled::Type Collision = IsBroken() ? ECollisionEnabled::NoCollision : LeafCollision.GetValue();
 	if (DoorMesh->GetCollisionEnabled() != Collision) DoorMesh->SetCollisionEnabled(Collision);

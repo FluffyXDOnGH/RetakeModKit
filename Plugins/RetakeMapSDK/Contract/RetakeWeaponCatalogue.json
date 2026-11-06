@@ -1,5 +1,5 @@
 {
-  "contentHash": "acda0f10793adacb51fb38d91a60fa42d8da7b2cdd56be9d93e653c7e6e6a3e5",
+  "contentHash": "27117d7bffbef18b98c2e8b1f1bfe1565a25e5cb2369f371088ee1ce4eacab4e",
   "format": 1,
   "weapons": [
     {
@@ -20,6 +20,11 @@
     {
       "displayName": "Flashbang",
       "id": "flash_grenade",
+      "slot": "Grenade"
+    },
+    {
+      "displayName": "Frag Grenade",
+      "id": "frag_grenade",
       "slot": "Grenade"
     },
     {
@@ -56,6 +61,11 @@
       "displayName": "P320",
       "id": "p320",
       "slot": "Secondary"
+    },
+    {
+      "displayName": "Smoke Grenade",
+      "id": "smoke_grenade",
+      "slot": "Grenade"
     },
     {
       "displayName": "UMP45",

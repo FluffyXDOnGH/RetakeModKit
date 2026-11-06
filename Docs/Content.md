@@ -6,4 +6,4 @@ Only approved original or appropriately licensed resources belong in the release
 
 Epic engine resources referenced by path are obtained from the creator's own engine installation and are not copied into this kit. Shared gameplay authoring resources need both technical compatibility and individual content approval. Preserve third-party notices and restrictions.
 
-Public release also requires a recorded review of the distribution channel under Epic's current Unreal Engine agreement, including its Engine Tools provisions. A candidate archive does not establish that review and must not be represented as a public release.
+When sharing a mod or its editable files, include only content you have permission to redistribute and retain the required notices.

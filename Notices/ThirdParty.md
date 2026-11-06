@@ -12,4 +12,4 @@ Python packages are installed from their official package distributions by Setup
 - `blake3` 1.0.11: CC0-1.0 / Apache-2.0; retain the installed distribution's license files.
 - `numpy` 2.3.5: BSD-3-Clause, with bundled-component notices in its distribution.
 
-Git, Python, Visual Studio build tools and Epic engine dependencies retain their own terms. The Retake Mod Kit license applies only to covered Codnyx work. This preview stores its assets directly in Git; Git LFS is not required.
+Git, Python, Visual Studio build tools and Epic engine dependencies retain their own terms. The Retake Mod Kit license applies only to covered Codnyx work. Assets are stored directly in Git; Git LFS is not required.
