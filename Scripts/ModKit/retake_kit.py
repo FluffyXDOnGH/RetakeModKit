@@ -22,10 +22,11 @@ import zipfile
 from pathlib import Path
 
 if __package__:
-    from . import retake_sources
+    from . import retake_sources, retake_prebuilt
     from .retake_contract import retained_surface_changes
 else:
     import retake_sources
+    import retake_prebuilt
     from retake_contract import retained_surface_changes
 
 FORMAT = 'RetakeMap'
@@ -294,9 +295,7 @@ def hash_engine_inputs(engine, relatives, allow_missing=False):
 
 
 def installed_engine_evidence(engine):
-    """Epic installed engines have no Git checkout. Supplied source and cooker/tool binaries identify the record."""
-    if not (engine / 'Engine/Build/InstalledBuild.txt').is_file():
-        raise ValueError('Engine must be an Epic installed build or a complete engine source checkout')
+    """Identify an installed engine or a source archive by its supplied inputs and tools."""
     files = []
     roots = ('Engine/Source', 'Engine/Plugins', 'Engine/Shaders', 'Engine/Config', 'Engine/Build', 'Engine/Binaries', 'Engine/Content')
     for root in roots:
@@ -309,7 +308,8 @@ def installed_engine_evidence(engine):
                 files.append(path.relative_to(engine).as_posix())
     if not files:
         raise ValueError('Installed engine has no inspectable cook inputs')
-    return {'revision': 'installed:' + digest(engine / 'Engine/Build/Build.version'),
+    kind = 'installed' if (engine / 'Engine/Build/InstalledBuild.txt').is_file() else 'unversioned'
+    return {'revision': kind + ':' + digest(engine / 'Engine/Build/Build.version'),
             'domains': {'installedSourceAndTools': identity(dict(hash_engine_inputs(engine, files)))}, 'trackedChanges': []}
 
 
@@ -317,8 +317,11 @@ def source_evidence(engine):
     """Conservative evidence, never an automatic compatibility verdict. Source and installed engines qualify explicitly."""
     if (engine / 'Engine/Build/InstalledBuild.txt').is_file():
         return installed_engine_evidence(engine)
-    repository = subprocess.run(['git', '-C', str(engine), 'rev-parse', '--show-toplevel'],
-                                capture_output=True, text=True, check=False)
+    try:
+        repository = subprocess.run(['git', '-C', str(engine), 'rev-parse', '--show-toplevel'],
+                                    capture_output=True, text=True, check=False)
+    except FileNotFoundError:
+        return installed_engine_evidence(engine)
     if repository.returncode or Path(repository.stdout.strip()).resolve() != engine.resolve():
         return installed_engine_evidence(engine)
     roots = ['Engine/Source', 'Engine/Plugins', 'Engine/Shaders', 'Engine/Config', 'Engine/Build', 'Engine/Content']
@@ -1182,7 +1185,12 @@ def main():
                     project = read(kit / 'RetakeModKit.uproject')
                     project['EngineAssociation'] = association
                     write(kit / 'RetakeModKit.uproject', project)
-            build(kit, engine)
+            prebuilt = retake_prebuilt.status(kit, engine) if args.command == 'setup' else {'usable': False, 'reason': 'Source build requested.'}
+            print(('Using prebuilt editor modules. ' if prebuilt['usable'] else 'Building editor modules. ') + prebuilt['reason'], flush=True)
+            if prebuilt['usable']:
+                contract_check(kit, engine)
+            else:
+                build(kit, engine)
         elif args.command == 'doctor':
             report = contract_check(kit, engine)
             print(json.dumps({'contract': report, 'engine': str(engine), 'qualificationFile': (kit / 'ModKit/qualification.json').exists()}, indent=2))

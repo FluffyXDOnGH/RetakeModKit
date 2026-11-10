@@ -1,0 +1,10 @@
+{
+	"BuildId": "4922e738-1986-422e-bf09-aed44c3e46a5",
+	"Compiler": "VisualStudio2026",
+	"CompilerVersion": "14.50.35739",
+	"Modules": 
+	{
+		"RetakeDestruction": "UnrealEditor-RetakeDestruction.dll",
+		"RetakeDestructionEditor": "UnrealEditor-RetakeDestructionEditor.dll"
+	}
+}

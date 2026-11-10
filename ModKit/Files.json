@@ -1,13 +1,25 @@
 {
-  "contentHash": "a2e1cf16d1dcdee403b3755dbe83f8ab35da4f1845fb30053a1503cee6d29638",
+  "contentHash": "728cd5b80b1c85d48380663557055781f92cc873fba3f5914e5f3be98720cf63",
   "files": {
     ".gitattributes": {
-      "sha256": "512bbff27679b115d100d0d1c83329e46c7f3843dc8e6ad9602e70396bb98f96",
-      "size": 285
+      "sha256": "928941febe87f24440ad041f58032319feb8ebc23ae23ed3d9fa5125ce9e4561",
+      "size": 304
     },
     ".gitignore": {
-      "sha256": "36ae2a3f0d0849982686288ca2375cdbb998262a14e4aed306ee95f11071507f",
-      "size": 274
+      "sha256": "1e87a9077e438d977cefcfc0046f6f58c5e84d3d55960b470a4182b8685b2b64",
+      "size": 438
+    },
+    "Binaries/Win64/UnrealEditor-RetakeModKit.dll": {
+      "sha256": "ee460bb5867b55fc756093d71000381afc0d318716a55f17b5a06e02cff6e6bf",
+      "size": 49152
+    },
+    "Binaries/Win64/UnrealEditor.modules": {
+      "sha256": "b9301ecd38c05be14e4c72bf60b3f32028fe265087489d69204077721d2bb588",
+      "size": 200
+    },
+    "Binaries/Win64/UnrealEditor.uclasses": {
+      "sha256": "4baaae1fa7426f39da7a7947f6a7438ed4562b7d4e023fe7e02bf0d8cac4e4f0",
+      "size": 222
     },
     "Config/DefaultEngine.ini": {
       "sha256": "2b15854d2b0248cba5b31ce486fde16c1476fdad8deb3e45f7a521809dcf6be2",
@@ -26,12 +38,12 @@
       "size": 0
     },
     "Docs/Compatibility.md": {
-      "sha256": "2e7e9c715c5300d717169d3ec60a4d204e19b60171d8688a7aceb9a4b2c0f15f",
-      "size": 1940
+      "sha256": "ed5c390b2382555e2dd6373b2b651d61485241c7726a475ed5f351011e8f2d47",
+      "size": 2997
     },
     "Docs/Content.md": {
-      "sha256": "f467da6bf7df1391ade308dace98ca69698b5b66772ecdf1d5063deb29135c9a",
-      "size": 997
+      "sha256": "93e46079394f720bd2fec32b3b7b9bdcb2115547cf7ceecd7d1b72a5639e7b92",
+      "size": 1355
     },
     "Docs/Export.md": {
       "sha256": "6e15d159b091ab34bdf89bde74fc071adcdc83736bdc4eaee3eb36ef4c382f4b",
@@ -106,8 +118,12 @@
       "size": 3413
     },
     "ModKit/Engine.json": {
-      "sha256": "54ab8f02d96cc6d8605ef9a343d1461f1416d3eb568236da4720c2f24124003d",
-      "size": 317
+      "sha256": "395dbeef78c226d3405a074aa7aef722b3f61ee5138542d73c762024d5e88a4d",
+      "size": 272
+    },
+    "ModKit/Prebuilt.json": {
+      "sha256": "e018d47e2f725ba5a3417ef6147c73817a8ec8ba686e10dc07002e47d1712b93",
+      "size": 25033
     },
     "ModKit/qualification.json": {
       "sha256": "c2409fc087f244391330a138bfd56a325a7e94f428b069425d183ccba0efaf37",
@@ -126,8 +142,24 @@
       "size": 1435
     },
     "Open-ModKit.ps1": {
-      "sha256": "55f73ae9fa76510a179a4e5d731003cd178c1843e4eab9de3dc939e6b80330c2",
-      "size": 765
+      "sha256": "3a7a14c13306151371377cd0db7fd2bd303c6678e793078ab0bcd9ece3efd0e7",
+      "size": 1099
+    },
+    "Plugins/RetakeDestruction/Binaries/Win64/UnrealEditor-RetakeDestruction.dll": {
+      "sha256": "50cb291c94b6ea9c1a0a246990a06d3fb08af39640c0ad828ca049bbcb5196a9",
+      "size": 654336
+    },
+    "Plugins/RetakeDestruction/Binaries/Win64/UnrealEditor-RetakeDestructionEditor.dll": {
+      "sha256": "0e5eca4233fcba43f58a6d0037eca78768d4fd17647c2e21558cda8b2d36df66",
+      "size": 314880
+    },
+    "Plugins/RetakeDestruction/Binaries/Win64/UnrealEditor.modules": {
+      "sha256": "800b6118faec45a4c43650e64e3171b0ddaafec86e25366521335a7971f8a9e3",
+      "size": 284
+    },
+    "Plugins/RetakeDestruction/Binaries/Win64/UnrealEditor.uclasses": {
+      "sha256": "9c13693a9768ae38400a2adf68478d76f93293aa04954af13ede88976e5f64bb",
+      "size": 925
     },
     "Plugins/RetakeDestruction/RetakeDestruction.uplugin": {
       "sha256": "16629abc5a2c38dd9dd29bbac6b06702643da5d146a4da07e798c3c0d00c203b",
@@ -216,6 +248,22 @@
     "Plugins/RetakeMapContent/RetakeMapContent.uplugin": {
       "sha256": "c624da3b8a4601a469e827deb965871ec6d89e26651e9ea802cb41f02b988252",
       "size": 314
+    },
+    "Plugins/RetakeMapSDK/Binaries/Win64/UnrealEditor-RetakeMapSDK.dll": {
+      "sha256": "9fae04174e59934c2236cdfde64b5bc5a21b39efc749d9d3d9969733ca357655",
+      "size": 2141184
+    },
+    "Plugins/RetakeMapSDK/Binaries/Win64/UnrealEditor-RetakeMapSDKEditor.dll": {
+      "sha256": "33ee35486f103e075637055003eea24092f29c3849e541b1ec9e35bcf4cae0af",
+      "size": 1868288
+    },
+    "Plugins/RetakeMapSDK/Binaries/Win64/UnrealEditor.modules": {
+      "sha256": "6f05b6a666e1143c26d25235b404980695b6e13ac6eedb19453b5b427a6f7663",
+      "size": 264
+    },
+    "Plugins/RetakeMapSDK/Binaries/Win64/UnrealEditor.uclasses": {
+      "sha256": "c3c6784d9ed2e2c7e595bf079d6ff76cff0eeb85f57ee4e7935419c802683f2b",
+      "size": 5919
     },
     "Plugins/RetakeMapSDK/Contract/RetakeMapSDK.contract.json": {
       "sha256": "f60534d1c40b61e94f4af2df2a8784e1a466e36f51081596175f0174fc31ca87",
@@ -778,8 +826,8 @@
       "size": 1013
     },
     "README.md": {
-      "sha256": "f803b6a77975a91dc3fd1166f8bbed962146f4eda9116d9ef23fd07cb8d67831",
-      "size": 1940
+      "sha256": "724bcd149d3c39b16b75334a93c23778f33f14b197acfa4980bd1c4472e08aed",
+      "size": 2593
     },
     "RetakeModKit.uproject": {
       "sha256": "596d7f0f7f9bd0c485a294f8aef5cf53edba3b25c15cf3c312957fcffd17d3fb",
@@ -818,12 +866,16 @@
       "size": 7189
     },
     "Scripts/ModKit/retake_kit.py": {
-      "sha256": "c5ae4f75a0657adaf61589e6955fb02a2cf46279bcb14ab336ea08081e878a87",
-      "size": 81719
+      "sha256": "761bf781b64d392dc1d7e961b114b46310b17a71576abd2c751aa5df8645e125",
+      "size": 82152
+    },
+    "Scripts/ModKit/retake_prebuilt.py": {
+      "sha256": "9e763db1bb91605e0f3d745214cb5304319e200aad2bcf5df460076a8ecaadc5",
+      "size": 5572
     },
     "Scripts/ModKit/retake_setup.py": {
-      "sha256": "146210d45e32b0468a0714adfe714fd51a8c4718b5ff63424238affd64e1a7be",
-      "size": 9023
+      "sha256": "0a17ce701968b0a55216132dda2d34877e20c4be33b55a8d9f336ac01dae671e",
+      "size": 8658
     },
     "Scripts/ModKit/retake_sources.py": {
       "sha256": "37c745fd9c3305fe246e36c3ac623070e371f18adea3b8382b468105843e688a",

@@ -8,3 +8,4 @@
 *.blend -diff -merge
 *.png -diff -merge
 *.wav -diff -merge
+*.dll -diff -merge

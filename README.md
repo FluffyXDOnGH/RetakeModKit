@@ -8,7 +8,7 @@ Keep the Mod Kit and Retake up to date. Setup and export check the required engi
 
 ## 1. Get the kit
 
-Install Git, Python **3.11+**, and the Visual Studio C++ tools required by the engine.
+Clone the kit from GitHub. The repository includes prebuilt Windows editor modules alongside their source:
 
 ```powershell
 git clone https://github.com/humarkx/RetakeModKit.git
@@ -17,7 +17,9 @@ cd RetakeModKit
 
 ## 2. Set up Unreal
 
-Obtain Unreal Engine source through your Epic-linked GitHub account. Check out the **exact UE6 revision** in [Engine.json](ModKit/Engine.json), then follow Epic's source-build instructions to build **UnrealEditor** and **ShaderCompileWorker** for Windows. A different UE6 checkout or Launcher engine will not pass setup.
+Use an **Unreal Engine 6** installation for Windows, either an installed engine or a source build. No specific Git revision or pristine checkout is required. For a source build, build **UnrealEditor** and **ShaderCompileWorker** first.
+
+Install Python **3.11+**. Setup uses the bundled editor DLLs when they match your engine build. If they do not match, install the Visual Studio C++ tools required by your engine; Setup builds the kit locally. Git is needed only for cloning or maintaining a Git checkout.
 
 From the kit folder, run these commands with your engine's location:
 
@@ -26,7 +28,9 @@ From the kit folder, run these commands with your engine's location:
 .\Open-ModKit.ps1
 ```
 
-Setup builds the kit plugins and authoring tools. You use existing Retake client/server packages for gameplay; you do not build Retake.
+Setup installs the authoring tools and either uses the matching prebuilt modules or compiles them for your engine. Open the kit with `Open-ModKit.ps1` after setup succeeds; double-clicking the `.uproject` can select another engine. Rerun Setup after changing engines or updating the kit.
+
+Accepting a UE6 installation does not guarantee that every revision can compile the current SDK or load its assets. Setup still checks the SDK contract, and export still checks cooked-content compatibility. You use existing Retake client/server packages for gameplay; you do not build Retake.
 
 ## 3. Create your mod
 
