@@ -140,6 +140,7 @@ private:
     void SavePreferences() const;
     FString SourceStamp() const;
     FString Python() const;
+    bool ToolsReady = false;
     FString Script() const;
     static FString Quote(const FString& Value);
 };

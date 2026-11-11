@@ -1,10 +1,10 @@
 {
-  "contentHash": "728cd5b80b1c85d48380663557055781f92cc873fba3f5914e5f3be98720cf63",
+  "contentHash": "372c48d1782094fc9af4e7cfabdb8cc9a59349800d321b7c198a4251679b28d5",
   "delivery": "prebuilt-with-source",
   "engineBuildId": "4922e738-1986-422e-bf09-aed44c3e46a5",
   "format": 1,
   "gameMetadataRelease": "0.1.0-alpha.36",
-  "parentContentHash": "a2e1cf16d1dcdee403b3755dbe83f8ab35da4f1845fb30053a1503cee6d29638",
+  "parentContentHash": "728cd5b80b1c85d48380663557055781f92cc873fba3f5914e5f3be98720cf63",
   "publicAcceptance": "pending",
   "requiredAcceptance": [
     "freshClone",
@@ -18,7 +18,7 @@
     "distributionReview"
   ],
   "sdkContract": 40,
-  "sourceContentHash": "0d602780c23eee8aa8305bb30187b671c23b557daf8983fe34753a8daf33d7c8",
+  "sourceContentHash": "acdd0a6bda7957f6d594140bde97a72eaf3015d3314beef11ffd87be28a2c950",
   "status": "candidate",
-  "version": "0.1.0-preview.3"
+  "version": "0.1.0-preview.4"
 }

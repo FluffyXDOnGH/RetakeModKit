@@ -131,10 +131,17 @@ private:
             Workflow.AddMenuEntry(FName(Entry.Action), FText::FromString(Entry.Title), FText::FromString(Entry.Title), FSlateIcon(),
                 FUIAction(FExecuteAction::CreateLambda([Action]
                 { FGlobalTabmanager::Get()->TryInvokeTab(WorkspaceTab); RetakeModKitPanel::Action(Action); }),
-                FCanExecuteAction::CreateLambda([Action]{return Action==TEXT("save")||Action==TEXT("setup")||Action==TEXT("output")||RetakeModKitPanel::IsMapWorkflow();})));
+                FCanExecuteAction::CreateLambda([Action]{return Action==TEXT("save")||Action==TEXT("setup")||Action==TEXT("output")||Action==TEXT("export")||RetakeModKitPanel::IsMapWorkflow();})));
         }
 
         FToolMenuSection& Weapons=Menu->FindOrAddSection(TEXT("Weapons"),LOCTEXT("WeaponsSection","Weapon authoring"));
+        for(const FEntry& Entry:{FEntry{TEXT("weapon-basis"),TEXT("Create Weapon Authoring References")},FEntry{TEXT("prepare-weapons"),TEXT("Prepare Weapon Profiles")}})
+        {
+            const FString Action(Entry.Action);
+            Weapons.AddMenuEntry(FName(Entry.Action),FText::FromString(Entry.Title),FText::FromString(Entry.Title),FSlateIcon(),
+                FUIAction(FExecuteAction::CreateLambda([Action]{FGlobalTabmanager::Get()->TryInvokeTab(WorkspaceTab);RetakeModKitPanel::Action(Action);}),
+                    FCanExecuteAction::CreateLambda([]{return RetakeModKitPanel::SelectedKind()==TEXT("weapons");})));
+        }
         Weapons.AddMenuEntry(TEXT("CheckWeaponDraft"),LOCTEXT("CheckWeaponDraft","Check Weapon Draft"),
             LOCTEXT("CheckWeaponDraftTip","Check native weapon authoring data; playable export remains a separate gate."),FSlateIcon(),
             FUIAction(FExecuteAction::CreateLambda([]{FGlobalTabmanager::Get()->TryInvokeTab(WorkspaceTab);RetakeModKitPanel::Action(TEXT("draft-status"));}),

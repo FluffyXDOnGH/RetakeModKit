@@ -105,6 +105,7 @@ public:
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[Header()]
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)[KindTabs()]
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[Status()]
+            +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[AuthoringToolsCard()]
             +SVerticalBox::Slot().FillHeight(1)
             [SNew(SWidgetSwitcher).WidgetIndex_Lambda([this]{return Model->ActiveKind==TEXT("map")?0:Model->ActiveKind==TEXT("weapons")?1:2;})
                 +SWidgetSwitcher::Slot()[SAssignNew(WorkflowScroll,SScrollBox)+SScrollBox::Slot()[Steps]]
@@ -162,6 +163,8 @@ private:
         if(Action==TEXT("draft-status"))return !Model->CanAuthorCurrentKind()||!Model->HasTools()||Model->HasUnsaved()?EActionTone::Unavailable:
             Model->Stale?EActionTone::Needed:Model->Errors?EActionTone::Blocked:EActionTone::Complete;
         if(!Model->HasTools()) return EActionTone::Unavailable;
+        if(Action==TEXT("weapon-basis"))return Model->HasUnsaved()?EActionTone::Unavailable:EActionTone::Needed;
+        if(Action==TEXT("prepare-weapons"))return !Model->CanPrepare()?EActionTone::Unavailable:Model->PreparationCurrent?EActionTone::Complete:EActionTone::Needed;
         if(Action==TEXT("status"))
             return Model->HasUnsaved()?EActionTone::Unavailable:Model->Stale?EActionTone::Needed:Model->Errors?EActionTone::Blocked:EActionTone::Complete;
         if(Action==TEXT("prepare"))
@@ -180,6 +183,8 @@ private:
     }
     FString ActionCaption(const FString& Action,EActionTone Tone) const
     {
+        if(Action==TEXT("weapon-basis"))return Tone==EActionTone::Running?TEXT("Creating references..."):TEXT("Create authoring references");
+        if(Action==TEXT("prepare-weapons"))return Tone==EActionTone::Running?TEXT("Preparing weapons..."):Tone==EActionTone::Complete?TEXT("Weapons prepared - prepare again"):TEXT("Prepare weapon profiles");
         if(Tone==EActionTone::Running) return (Action==TEXT("status")||Action==TEXT("draft-status"))?TEXT("Checking..."):Action==TEXT("prepare")?TEXT("Preparing..."):
             Action==TEXT("export")?TEXT("Exporting..."):Action==TEXT("test-info")?TEXT("Checking installations..."):Action==TEXT("minimap")?TEXT("Creating minimap..."):TEXT("Launching...");
         if(Action==TEXT("draft-status"))return Tone==EActionTone::Complete?TEXT("Draft checked - check again"):TEXT("Check weapon draft");
@@ -213,6 +218,8 @@ private:
                 if(Action==TEXT("status"))return Model->HasTools()&&!Model->HasUnsaved();
                 if(Action==TEXT("draft-status"))return Model->ActiveKind==TEXT("weapons")&&Model->CanAuthorCurrentKind()&&Model->HasTools()&&!Model->HasUnsaved();
                 if(Action==TEXT("prepare"))return Model->CanPrepare();
+                if(Action==TEXT("prepare-weapons"))return Model->ActiveKind==TEXT("weapons")&&Model->CanPrepare();
+                if(Action==TEXT("weapon-basis"))return Model->ActiveKind==TEXT("weapons")&&Model->HasTools()&&!Model->HasUnsaved()&&Model->CanAuthorCurrentKind();
                 if(Action==TEXT("export"))return Model->CanExport();
                 if(Action==TEXT("minimap"))return Model->CanBakeMinimap();
                 if(Action==TEXT("test-info"))return Model->HasExport()&&Model->HasTools();
@@ -297,17 +304,22 @@ private:
         {const FString Role=Entry.Key;Assets->AddSlot()[Button(Entry.Value,[this,Role]{Model->CreateWeaponAsset(Role);},false,[this]{return !Model->Busy()&&!Model->ModId.IsEmpty()&&Model->CanAuthorCurrentKind();})];}
         return SNew(SVerticalBox)
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,4,12)[StepCard(1,TEXT("Create / select weapon pack"),TEXT("A weapon pack owns data and resources in its own Content folder. It does not need a level."),
-                [this]{return Model->CanAuthorCurrentKind()?TEXT("Authoring draft"):TEXT("SDK update required");},Selectors(false))]
+                [this]{return Model->CanAuthorCurrentKind()?TEXT("Workspace selected"):TEXT("SDK update required");},SNew(SVerticalBox)
+                    +SVerticalBox::Slot().AutoHeight()[Selectors(false)]
+                    +SVerticalBox::Slot().AutoHeight().Padding(0,8)[Button(TEXT("Open / create weapon example"),[this]{Model->OpenExample();},false,[this]{return !Model->Busy()&&Model->HasTools();})])]
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,4,12)[StepCard(2,TEXT("Author weapons and profiles"),TEXT("Open DA_WeaponPack in Data. Add weapon identities and profiles, then bind their public specifications. Author presentation resources inside this mod."),
                 []{return FString(TEXT("Data authoring"));},SNew(SVerticalBox)
                     +SVerticalBox::Slot().AutoHeight()[Assets]
+                    +SVerticalBox::Slot().AutoHeight().Padding(0,10)[ActionButton(TEXT("weapon-basis"))]
                     +SVerticalBox::Slot().AutoHeight().Padding(0,12,0,0)[ActionButton(TEXT("save"))])]
             +SVerticalBox::Slot().AutoHeight().Padding(0,0,4,12)[StepCard(3,TEXT("Check authoring data"),TEXT("Native asset and ownership checks help author the draft. Export, preparation and runtime acceptance are separate gates."),
                 [this]{return Model->Stale?TEXT("Check needed"):Model->Errors?TEXT("Needs attention"):TEXT("Draft check complete");},SNew(SVerticalBox)
                     +SVerticalBox::Slot().AutoHeight()[ActionButton(TEXT("draft-status"))]
                     +SVerticalBox::Slot().AutoHeight().Padding(0,10,0,0)[IssuesCard()])]
-            +SVerticalBox::Slot().AutoHeight().Padding(0,0,4,12)[StepCard(4,TEXT("Prepare, export and test"),TEXT("Weapon resource preparation, pack registration, admission and installed-game testing are still being implemented. These actions will use the shared exporter when the weapon pipeline is available."),
-                []{return FString(TEXT("Not enabled yet"));},SNew(STextBlock).Text(Text(TEXT("No dummy map, map visibility bake, or map-only export is used for a weapon pack."))).Font(Font(10)).ColorAndOpacity(Muted).AutoWrapText(true))]
+            +SVerticalBox::Slot().AutoHeight().Padding(0,0,4,12)[StepCard(4,TEXT("Prepare weapon profiles"),TEXT("Build the catalogue's pose contributions from the saved weapon specifications and authoring references. Current contributions are reused."),
+                [this]{return Model->PreparationCurrent?TEXT("Prepared"):TEXT("Check saved content first");},ActionButton(TEXT("prepare-weapons")))]
+            +SVerticalBox::Slot().AutoHeight().Padding(0,0,4,12)[StepCard(5,TEXT("Export your weapon pack"),TEXT("Export Windows and Linux content plus editable-source recovery. Compatibility and content validation still apply."),
+                [this]{return Model->ExportIsCurrent()?TEXT("Exported"):Model->CanExport()?TEXT("Ready to export"):TEXT("Complete earlier steps and review compatibility");},ExportCard())]
             +SVerticalBox::Slot().AutoHeight()[ActivityCard()];
     }
     TSharedRef<SWidget> GameModesWorkspace()
@@ -316,6 +328,14 @@ private:
             []{return FString(TEXT("Planned"));},SNew(SVerticalBox)
                 +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(Text(TEXT("This mod type cannot be created or exported yet. Maps can already declare support for Retake's existing modes such as FFA, TDM and OBJ."))).Font(Font(11)).ColorAndOpacity(Muted).AutoWrapText(true)]
                 +SVerticalBox::Slot().AutoHeight().Padding(0,14,0,0)[Button(TEXT("Go to map authoring"),[this]{Model->SelectKind(TEXT("map"));})]);
+    }
+    TSharedRef<SWidget> AuthoringToolsCard()
+    {
+        return SNew(SBorder).BorderImage(&Card).BorderBackgroundColor(Surface).Padding(14)
+            .Visibility_Lambda([this]{return Model->HasTools()?EVisibility::Collapsed:EVisibility::Visible;})
+            [SNew(SVerticalBox)
+                +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(Text(TEXT("Enable checking, preparation and export using this editor's bundled Python. The first setup downloads the authoring dependencies; progress stays in this window."))).AutoWrapText(true).ColorAndOpacity(White)]
+                +SVerticalBox::Slot().AutoHeight().Padding(0,10,0,0)[Button(TEXT("Enable authoring tools"),[this]{Model->SetupTools();},true)]];
     }
     TSharedRef<SWidget> StepCard(int32 Number,const FString& Title,const FString& Description,TFunction<FString()> StatusText,TSharedRef<SWidget> Body)
     {
@@ -592,8 +612,8 @@ private:
     {
         return SNew(SVerticalBox)
             +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text_Lambda([this]
-                {return Text(Model->ExportIsCurrent()?TEXT("This saved source has been exported. Continue to Test."):
-                    Model->CanExport()?TEXT("Your map is ready. Choose a new revision and export."):TEXT("Resolve the checks above before exporting."));})
+                {return Text(Model->ExportIsCurrent()?TEXT("This saved source has been exported. Open the export folder to find the bundle."):
+                    Model->CanExport()?TEXT("Your mod is ready. Choose a new revision and export."):TEXT("Resolve the checks above before exporting."));})
                 .Font(Font(10)).ColorAndOpacity(Muted).AutoWrapText(true)]
             +SVerticalBox::Slot().AutoHeight().Padding(0,12,0,0)
             [SNew(SHorizontalBox)

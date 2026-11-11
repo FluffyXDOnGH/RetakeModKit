@@ -121,6 +121,7 @@ def main():
     parser.add_argument('--engine', type=Path)
     parser.add_argument('--check-only', action='store_true', help='Inspect prerequisites without installing, building or writing settings')
     parser.add_argument('--check-launch', action='store_true', help='Verify the configured editor modules before opening the kit')
+    parser.add_argument('--editor', action='store_true', help='Prepare authoring tools for an already running editor; never rebuild its loaded modules')
     args = parser.parse_args()
     kit = args.kit.resolve()
     if not (kit / 'RetakeModKit.uproject').is_file():
@@ -129,7 +130,12 @@ def main():
     if args.check_launch:
         check_launch(kit, engine)
         return
-    report = prerequisites(kit, engine)
+    if args.editor:
+        report = {'python': '.'.join(map(str, sys.version_info[:3])), 'buildMode': 'editor',
+                  'engine': retake_prebuilt.engine_identity(engine)}
+        retake_prebuilt.module_files(kit, report['engine']['buildId'])
+    else:
+        report = prerequisites(kit, engine)
     if args.check_only:
         print(json.dumps(report, indent=2))
         return
@@ -143,7 +149,11 @@ def main():
         venv.EnvBuilder(with_pip=True).create(environment)
     subprocess.run([str(python), '-m', 'pip', 'install', '--disable-pip-version-check', '--only-binary=:all:',
                     '-r', str(kit / 'Scripts/ModKit/requirements.txt')], cwd=kit, check=True)
-    subprocess.run([str(python), str(kit / 'Scripts/ModKit/retake_kit.py'), 'setup',
+    if args.editor:
+        settings = kit / 'Saved/ModKit/engine.json'
+        settings.parent.mkdir(parents=True, exist_ok=True)
+        settings.write_text(json.dumps({'path': str(engine)}, indent=2) + '\n', encoding='utf-8')
+    subprocess.run([str(python), str(kit / 'Scripts/ModKit/retake_kit.py'), 'doctor' if args.editor else 'setup',
                     '--kit', str(kit), '--engine', str(engine)], cwd=kit, check=True)
     subprocess.run([str(python), str(kit / 'Scripts/ModKit/retake_kit.py'), 'record',
                     '--kit', str(kit), '--engine', str(engine)], cwd=kit, check=True)

@@ -2,17 +2,9 @@
 
 Weapon mods contain definitions and presentation/preparation data. Retake implements their authoritative behavior; creator gameplay DLLs and replacement runtime classes are not supported.
 
-Create an empty workspace:
+Open **Retake → Mod Kit Workspace**, click **+ New mod**, select **Weapons**, and enter a name. Enable authoring tools in the workspace if prompted.
 
-```powershell
-.\.venv\Scripts\python.exe Scripts\ModKit\retake_kit.py create --mod RetakeMod_MyWeapons --kind weapons
-```
-
-Create the separate original blockout carbine example in a fresh namespace:
-
-```powershell
-.\.venv\Scripts\python.exe Scripts\ModKit\retake_kit.py example --kind weapons --mod RetakeMod_MyExampleWeapons
-```
+Click **Open / create weapon example** to explore the separate original blockout carbine. For your own pack, use **Create authoring references** to prepare the shared body/arms and pose basis, then the asset buttons to add weapon specifications, ammunition data, animation profiles and tracer profiles. **Open weapon catalogue** opens the pack's IDs, profile bindings and defaults.
 
 It imports the provided original carbine and template-derived body/arms, creates owned definitions, procedural example sounds and editable reference/action clips, then runs native pose preparation and validation. It never overwrites an existing workspace. The example is a teaching blockout, with simple pose/motion and a timed reload sound; its appearance is not a production animation pack.
 
@@ -24,12 +16,7 @@ Author a pack catalogue, stable weapon/ammunition/profile IDs, mesh/material/aud
 
 Use animation events for supported presentation and action timing; do not implement damage or inventory mutation in arbitrary animation callbacks. The server's native weapon simulation remains authoritative.
 
-Preparation uses a shared SDK authoring basis or an explicitly mod-owned basis. Keep the preparation recipe and all editable animation inputs. Once configured:
-
-```powershell
-.\.venv\Scripts\python.exe Scripts\ModKit\retake_kit.py prepare-weapons --mod RetakeMod_MyWeapons --all-profiles
-.\.venv\Scripts\python.exe Scripts\ModKit\retake_kit.py validate --mod RetakeMod_MyWeapons
-```
+Preparation uses a shared SDK authoring basis or an explicitly mod-owned basis. Keep the preparation recipe and all editable animation inputs. Click **Save mod content**, **Check weapon draft**, then **Prepare weapon profiles**. Preparation uses the catalogue's bindings and retains its recipes automatically. Review the issues shown in the workspace, then choose a revision and click **Export mod** when the checks pass. Use **Open export folder** to find the finished bundle.
 
 Profiles select behavior data without duplicating identical assets. Pack IDs separate weapons that share display names. Map/loadout references must declare exact weapon-pack dependencies, and the server selects which packs/profiles are enabled.
 

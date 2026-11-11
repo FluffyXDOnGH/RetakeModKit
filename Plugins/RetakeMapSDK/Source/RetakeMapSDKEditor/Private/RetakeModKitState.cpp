@@ -64,6 +64,11 @@ FText Label(const FString& Value) { return FText::FromString(Value); }
 
 FRetakeModKitState::FRetakeModKitState()
 {
+    const auto ToolSetup=ReadJSON(Kit()/TEXT("Saved/ModKit/setup.json"));
+    const TSharedPtr<FJsonObject>* SetupEngine=nullptr;
+    const FString EditorBuildId=TextField(ReadJSON(FString(FPlatformProcess::GetModulesDirectory())/TEXT("UnrealEditor.modules")),TEXT("BuildId"));
+    ToolsReady=Flag(ToolSetup,TEXT("completed"))&&!EditorBuildId.IsEmpty()
+        &&ToolSetup->TryGetObjectField(TEXT("engine"),SetupEngine)&&TextField(*SetupEngine,TEXT("buildId"))==EditorBuildId;
     Revision = TEXT("r") + FDateTime::UtcNow().ToString(TEXT("%Y%m%d%H%M%S"));
     if (const TSharedPtr<FJsonObject> Saved = ReadJSON(Preferences()))
     { ModId = TextField(Saved, TEXT("mod")); GameExe = TextField(Saved, TEXT("game"));
@@ -113,7 +118,7 @@ FString FRetakeModKitState::Python() const
 }
 FString FRetakeModKitState::Script() const { return Kit() / TEXT("Scripts/ModKit/retake_kit.py"); }
 FString FRetakeModKitState::Quote(const FString& Value) { return TEXT("\"") + Value.Replace(TEXT("\""), TEXT("\\\"")) + TEXT("\""); }
-bool FRetakeModKitState::HasTools() const { return FPaths::FileExists(Python()) && FPaths::FileExists(Script()); }
+bool FRetakeModKitState::HasTools() const { return ToolsReady && FPaths::FileExists(Python()) && FPaths::FileExists(Script()); }
 
 void FRetakeModKitState::SavePreferences() const
 {
@@ -251,7 +256,7 @@ void FRetakeModKitState::Save()
     Packages.RemoveAll([&](const UPackage* P) { return !P->GetName().StartsWith(Root); });
     if (!Packages.IsEmpty() && !UEditorLoadingAndSavingUtils::SavePackages(Packages, false)) Notice = TEXT("Some content could not be saved. Check the editor messages.");
     else Notice = TEXT("Mod content saved. Check the map to refresh its readiness.");
-    Stale = true; Ready = false; ++ChangeSerial; Changed.Broadcast();
+    Stale = true; Ready = false; if(!IsMapWorkspace())PreparationCurrent=false; ++ChangeSerial; Changed.Broadcast();
 }
 
 void FRetakeModKitState::OpenMap()
@@ -265,14 +270,16 @@ void FRetakeModKitState::OpenMap()
 
 void FRetakeModKitState::OpenExample()
 {
-    if (Busy() || !IsKit() || !IsMapWorkspace()) return;
-    const FString Example(TEXT("RetakeMod_Example"));
-    if (RetakeModWorkspace::List().Contains(Example)) { Select(Example); OpenMap(); return; }
+    if (Busy() || !IsKit() || !CanAuthorCurrentKind()) return;
+    const FString Example(IsMapWorkspace() ? TEXT("RetakeMod_Example") : TEXT("RetakeMod_ExampleWeapons"));
+    if (RetakeModWorkspace::List().Contains(Example)) { Select(Example); if(IsMapWorkspace())OpenMap();else OpenContent(); return; }
     if (!HasTools()) { Notice = TEXT("Set up authoring tools first, then create the original-content example."); return; }
     ModId = Example; CurrentAction = TEXT("example");
+    Ready=Valid=PreparationCurrent=false;Stale=true;ValidationStamp.Reset();ExportStamp.Reset();LastExport.Reset();
     JobDirectory = Kit() / TEXT("Saved/ModKit/EditorJobs") / FGuid::NewGuid().ToString(EGuidFormats::Digits);
     IFileManager::Get().MakeDirectory(*JobDirectory, true); LastLog = JobDirectory / TEXT("activity.log");
-    Queue = {{Python(), TEXT("-X utf8 ") + Quote(Script()) + TEXT(" example --kit ") + Quote(Kit()) + TEXT(" --mod ") + Example,
+    Queue = {{Python(), TEXT("-X utf8 ") + Quote(Script()) + TEXT(" example --kit ") + Quote(Kit()) + TEXT(" --mod ") + Example
+        + TEXT(" --kind ") + ActiveKind + TEXT(" --engine ") + Quote(FPaths::ConvertRelativePathToFull(FPaths::EngineDir()/TEXT(".."))),
         TEXT("Creating the original-content example")}};
     StartNext();
 }
@@ -446,6 +453,7 @@ void FRetakeModKitState::OpenMinimapPreview()
 void FRetakeModKitState::SetupTools()
 {
     if (Busy() || !IsKit()) return;
+    if (GEditor->PlayWorld) { Notice = TEXT("Stop Play in Editor before setting up authoring tools."); return; }
 #if PLATFORM_WINDOWS
     const FString Bootstrap = FPaths::ConvertRelativePathToFull(FPaths::EngineDir() / TEXT("Binaries/ThirdParty/Python3/Win64/python.exe"));
 #else
@@ -453,11 +461,13 @@ void FRetakeModKitState::SetupTools()
 #endif
     if (!FPaths::FileExists(Bootstrap)) { Notice = TEXT("The engine's Python tools are missing. Enable Python Editor Script Plugin and restart the editor."); return; }
     CurrentAction = TEXT("setup");
+    ToolsReady = false; Notice.Reset(); Activity.Reset(); PendingOutput.Reset();
     JobDirectory = Kit() / TEXT("Saved/ModKit/EditorJobs") / FGuid::NewGuid().ToString(EGuidFormats::Digits);
     IFileManager::Get().MakeDirectory(*JobDirectory, true); LastLog = JobDirectory / TEXT("activity.log");
-    Queue = {{Bootstrap, TEXT("-m venv ") + Quote(Kit() / TEXT(".venv")), TEXT("Setting up authoring tools")},
-        {Python(), TEXT("-m pip install --force-reinstall --only-binary=:all: -r ") + Quote(Kit() / TEXT("Scripts/ModKit/requirements.txt")), TEXT("Installing authoring dependencies")},
-        {Python(), TEXT("-c ") + Quote(TEXT("import blake3; import numpy")), TEXT("Verifying authoring dependencies")}};
+    // Use the running engine's Python and record its compatibility data without rebuilding loaded DLLs.
+    Queue = {{Bootstrap, TEXT("-X utf8 ") + Quote(Kit()/TEXT("Scripts/ModKit/retake_setup.py"))
+        + TEXT(" --editor --kit ") + Quote(Kit()) + TEXT(" --engine ")
+        + Quote(FPaths::ConvertRelativePathToFull(FPaths::EngineDir()/TEXT(".."))), TEXT("Preparing authoring tools and engine records")}};
     StartNext();
 }
 
@@ -493,10 +503,11 @@ void FRetakeModKitState::RefreshTestModes()
 
 bool FRetakeModKitState::CanPrepare() const
 {
-    return IsKit() && IsMapWorkspace() && HasTools() && !Busy() && !Stale && !HasUnsaved() && PreparationNeeded && !PreparationBlocked;
+    if (!IsKit() || !HasTools() || Busy() || Stale || HasUnsaved()) return false;
+    return IsMapWorkspace() ? PreparationNeeded && !PreparationBlocked : ActiveKind==TEXT("weapons") && CanAuthorCurrentKind();
 }
 
-bool FRetakeModKitState::CanExport() const { return IsKit() && IsMapWorkspace() && HasTools() && !Busy() && Ready && !Stale && !HasUnsaved(); }
+bool FRetakeModKitState::CanExport() const { return IsKit() && RetakeModWorkspace::CanExportKind(ActiveKind) && HasTools() && !Busy() && Ready && !Stale && !HasUnsaved(); }
 bool FRetakeModKitState::IsTestingWorkflow() const
 {
     return CurrentAction==TEXT("test-info")||CurrentAction==TEXT("test")||CurrentAction==TEXT("start-test-server")
@@ -521,7 +532,7 @@ void FRetakeModKitState::RefreshExports()
 {
     if(Busy())return;
     Exports.Reset(); ExportLabels.Reset();
-    if(!IsMapWorkspace()){LastExport.Reset();TestModes.Reset();return;}
+    if(!RetakeModWorkspace::CanExportKind(ActiveKind)){LastExport.Reset();TestModes.Reset();return;}
     TArray<FString> Candidates;
     for(const FString& Root : {Kit()/TEXT("Exports")/ModId, Kit()/TEXT("Saved/ModKit/QualificationCandidates")/ModId})
     {
@@ -564,26 +575,29 @@ void FRetakeModKitState::ChooseExport()
 void FRetakeModKitState::Run(const FString& Action)
 {
     if (Busy() || !IsKit() || (ModId.IsEmpty() && Action != TEXT("stop-test-server") && Action != TEXT("server-status"))) return;
-    if(!IsMapWorkspace()&&Action!=TEXT("draft-status")&&Action!=TEXT("server-status")&&Action!=TEXT("stop-test-server"))
+    const bool WeaponAction=ActiveKind==TEXT("weapons")&&(Action==TEXT("draft-status")||Action==TEXT("prepare-weapons")||Action==TEXT("weapon-basis")||Action==TEXT("export"));
+    if(!IsMapWorkspace()&&!WeaponAction&&Action!=TEXT("server-status")&&Action!=TEXT("stop-test-server"))
     {Notice=TEXT("This mod type has a separate authoring workflow. Its playable export and test pipeline is not enabled yet.");return;}
     if(Action==TEXT("draft-status")&&(ActiveKind!=TEXT("weapons")||!CanAuthorCurrentKind())){Notice=KindDescription();return;}
     if (!HasTools()) { Notice = TEXT("Set up the authoring tools first. This takes one click."); return; }
     if (GEditor->PlayWorld) { Notice = TEXT("Stop Play in Editor before running authoring tools."); return; }
-    const bool SourceAction = Action == TEXT("status") || Action == TEXT("prepare") || Action == TEXT("export") || Action == TEXT("minimap") || Action == TEXT("draft-status");
+    const bool SourceAction = Action == TEXT("status") || Action == TEXT("prepare") || Action == TEXT("export") || Action == TEXT("minimap") || Action == TEXT("draft-status") || Action==TEXT("prepare-weapons") || Action==TEXT("weapon-basis");
     if (SourceAction && HasUnsaved()) { Notice = TEXT("Save mod content first so the checks and export use your latest work."); return; }
     if (SourceAction && IsMapWorkspace() && Modes.IsEmpty()) { Notice = TEXT("Select at least one game mode, or use automatic mode detection."); return; }
     if (Action == TEXT("export") && !CanExport()) { Notice = TEXT("Check and prepare the map before exporting."); return; }
-    if (Action == TEXT("prepare") && !CanPrepare())
+    if ((Action == TEXT("prepare") || Action==TEXT("prepare-weapons")) && !CanPrepare())
     { Notice = Stale ? TEXT("Check the saved map first to identify required preparation.") : PreparationCurrent ? TEXT("Preparation is up to date. Continue to Export.") : TEXT("Fix the preparation setup shown below, then check again."); return; }
     if(Action==TEXT("minimap")&&!CanBakeMinimap()){Notice=TEXT("Open the map, configure its capture and save before creating the minimap.");return;}
-    if ((Action == TEXT("prepare") || Action == TEXT("minimap")) && !ReleaseModPackages()) return;
+    if ((Action == TEXT("prepare") || Action == TEXT("minimap") || Action==TEXT("prepare-weapons") || Action==TEXT("weapon-basis")) && !ReleaseModPackages()) return;
     CurrentAction = Action; Notice.Reset(); Activity.Reset(); PendingOutput.Reset();
     JobStartStamp = SourceStamp(); JobTestStamp=TestSelectionStamp();
     JobDirectory = Kit() / TEXT("Saved/ModKit/EditorJobs") / FGuid::NewGuid().ToString(EGuidFormats::Digits);
     IFileManager::Get().MakeDirectory(*JobDirectory, true);
     LastLog = JobDirectory / TEXT("activity.log"); ReportPath = JobDirectory / TEXT("readiness.json");
     FString Arguments = TEXT("-X utf8 ") + Quote(Script()) + TEXT(" ") + Action + TEXT(" --kit ") + Quote(Kit())
-        + TEXT(" --mod ") + ModId + TEXT(" --modes ") + Quote(Modes);
+        + TEXT(" --mod ") + ModId + TEXT(" --modes ") + Quote(Modes)
+        + TEXT(" --engine ") + Quote(FPaths::ConvertRelativePathToFull(FPaths::EngineDir()/TEXT("..")));
+    if(Action==TEXT("prepare-weapons")) Arguments+=TEXT(" --all-profiles");
     if (Action == TEXT("status") || Action == TEXT("prepare") || Action == TEXT("draft-status")) Arguments += TEXT(" --report ") + Quote(ReportPath);
     if(Action==TEXT("minimap"))
     {
@@ -624,6 +638,8 @@ void FRetakeModKitState::Run(const FString& Action)
         : Action == TEXT("draft-status") ? TEXT("Checking weapon authoring data") : Action == TEXT("export") ? TEXT("Exporting your mod") : Action == TEXT("test-info") ? TEXT("Checking selected installations")
         : Action == TEXT("server-status") ? TEXT("Checking test-server status") : Action == TEXT("start-test-server") ? TEXT("Starting the local server") : TEXT("Opening Retake")}};
     if(Action==TEXT("minimap"))Queue.Add({Python(),TEXT("-X utf8 ")+Quote(Script())+TEXT(" status --kit ")+Quote(Kit())+TEXT(" --mod ")+ModId+TEXT(" --modes ")+Quote(Modes)+TEXT(" --report ")+Quote(ReportPath),TEXT("Checking the updated minimap")});
+    if(Action==TEXT("prepare-weapons")||Action==TEXT("weapon-basis"))Queue.Add({Python(),TEXT("-X utf8 ")+Quote(Script())+TEXT(" draft-status --kit ")+Quote(Kit())+TEXT(" --mod ")+ModId
+        +TEXT(" --engine ")+Quote(FPaths::ConvertRelativePathToFull(FPaths::EngineDir()/TEXT("..")))+TEXT(" --report ")+Quote(ReportPath),TEXT("Checking weapon preparation")});
     StartNext();
 }
 
@@ -692,7 +708,7 @@ bool FRetakeModKitState::Tick(float)
         NextRefresh = FPlatformTime::Seconds() + 3;
         RefreshMinimapState();
         if (!Stale && (HasUnsaved() || SourceStamp() != ValidationStamp))
-        { Stale = true; Ready = false; ++ChangeSerial; Changed.Broadcast(); }
+        { Stale = true; Ready = false; if(!IsMapWorkspace())PreparationCurrent=false; ++ChangeSerial; Changed.Broadcast(); }
     }
     return true;
 }
@@ -710,11 +726,13 @@ void FRetakeModKitState::Finished(int32 Code)
 {
     OperationFailed = Code != 0 && Code != -2;
     if (CurrentAction == TEXT("prepare") || CurrentAction == TEXT("minimap")) {RestoreMap();RefreshMinimapState();}
+    if(CurrentAction==TEXT("prepare-weapons")||CurrentAction==TEXT("weapon-basis"))RestoreMap();
     if (FPaths::FileExists(ReportPath) && (CurrentAction == TEXT("status") || CurrentAction == TEXT("prepare") || CurrentAction == TEXT("minimap"))) ReadReport();
-    if(FPaths::FileExists(ReportPath)&&CurrentAction==TEXT("draft-status"))ReadDraftReport();
+    if(CurrentAction==TEXT("prepare-weapons")) PreparationCurrent=Code==0;
+    if(FPaths::FileExists(ReportPath)&&(CurrentAction==TEXT("draft-status")||CurrentAction==TEXT("prepare-weapons")||CurrentAction==TEXT("weapon-basis")))ReadDraftReport();
     if (Code != 0)
     {
-        if(CurrentAction==TEXT("status")||CurrentAction==TEXT("prepare")||CurrentAction==TEXT("export")||CurrentAction==TEXT("minimap")||CurrentAction==TEXT("draft-status")){Ready=false;Stale=true;}
+        if(CurrentAction==TEXT("status")||CurrentAction==TEXT("prepare")||CurrentAction==TEXT("export")||CurrentAction==TEXT("minimap")||CurrentAction==TEXT("draft-status")||CurrentAction==TEXT("prepare-weapons")||CurrentAction==TEXT("weapon-basis")){Ready=false;Stale=true;}
         if(CurrentAction==TEXT("test-info"))InvalidateTestCheck();
         if(Notice.IsEmpty())Notice=TEXT("The operation needs attention. Open the activity log for details.");
     }
@@ -753,10 +771,12 @@ void FRetakeModKitState::Finished(int32 Code)
             ServerPath=TextField((*Items)[0]->AsObject(),TEXT("path"));
         InvalidateTestCheck(); SavePreferences(); Notice=TEXT("Installation scan finished. Select an export, then check the installed binaries before testing.");
     }
-    else if(CurrentAction==TEXT("draft-status"))Notice=TEXT("Authoring data checked. This does not certify weapon export or runtime readiness.");
+    else if(CurrentAction==TEXT("draft-status"))Notice=TEXT("Weapon data checked. Prepare the profiles, then export when compatibility checks pass.");
+    else if(CurrentAction==TEXT("prepare-weapons"))Notice=TEXT("Weapon profiles prepared and checked. Review any remaining issues before export.");
+    else if(CurrentAction==TEXT("weapon-basis"))Notice=TEXT("Weapon authoring references are ready. Bind the catalogue and animation profiles, then prepare weapons.");
     else if (CurrentAction == TEXT("minimap")) Notice=TEXT("Minimap created and checked. Open preview to review the image and alignment.");
-    else if (CurrentAction == TEXT("example")) { Refresh(); OpenMap(); Notice = TEXT("Example created. Explore its elements, then create your own mod."); }
-    else if (CurrentAction == TEXT("setup")) Notice = TEXT("Authoring tools are ready. Check your map to continue.");
+    else if (CurrentAction == TEXT("example")) { Refresh(); if(IsMapWorkspace())OpenMap();else OpenContent(); Notice = TEXT("Example created. Explore its content, then create your own mod."); }
+    else if (CurrentAction == TEXT("setup")) { ToolsReady=true; Notice = TEXT("Authoring tools are ready. Create a mod or check your saved content to continue."); }
     else if (CurrentAction == TEXT("stop-test-server")) { ServerStatus=TEXT("stopped");ServerStatusDetail=TEXT("The Kit-managed test server has stopped.");Notice=ServerStatusDetail; }
     else if (CurrentAction == TEXT("start-test-server")) {ServerStatus=TEXT("running");ServerStatusDetail=TEXT("The selected map is running on the local test server.");Notice=ServerStatusDetail;}
     else if (CurrentAction == TEXT("test")) { TestLaunched = true; if(UseServer){ServerStatus=TEXT("running");ServerStatusDetail=TEXT("The Kit-managed server was started for this launch.");} Notice = TEXT("Retake launched with the exported mod. Close the test client before starting another."); }
@@ -767,14 +787,17 @@ void FRetakeModKitState::ReadDraftReport()
 {
     const auto Report=ReadJSON(ReportPath);
     if(!Report||!Flag(Report,TEXT("complete"))||TextField(Report,TEXT("kind"))!=TEXT("weapons")||TextField(Report,TEXT("modId"))!=ModId)return;
-    Issues.Reset();Errors=Warnings=0;Ready=false;Valid=Flag(Report,TEXT("valid"));
+    Issues.Reset();Errors=Warnings=0;Valid=Flag(Report,TEXT("valid"));Candidate=Flag(Report,TEXT("candidateOnly"));
+    Ready=Valid&&PreparationCurrent&&Flag(Report,TEXT("ready"));
+    Checks.Last()={TEXT("Game compatibility"),Flag(Report,TEXT("compatibilityConfigured"))?TEXT("Configured; verified at export"):TEXT("Kit update or qualification needed"),Flag(Report,TEXT("compatibilityConfigured"))?1:3};
     const TArray<TSharedPtr<FJsonValue>>* Rows=nullptr;
     if(Report->TryGetArrayField(TEXT("issues"),Rows))for(const auto& Row:*Rows)
     {
         const auto Item=Row->AsObject();const bool Error=Flag(Item,TEXT("error"));Error?++Errors:++Warnings;
         Issues.Add((Error?TEXT("Fix: "):TEXT("Note: "))+TextField(Item,TEXT("actor"))+TEXT(" - ")+TextField(Item,TEXT("detail")));
     }
-    ValidationStamp=SourceStamp();Stale=HasUnsaved()||ValidationStamp!=JobStartStamp;
+    ValidationStamp=SourceStamp();Stale=HasUnsaved()||(CurrentAction==TEXT("draft-status")&&ValidationStamp!=JobStartStamp);
+    if(Stale)Ready=false;
 }
 
 void FRetakeModKitState::ReadReport()
@@ -830,11 +853,14 @@ FString FRetakeModKitState::StatusTitle() const
 {
     if (!IsKit()) return TEXT("Open the Retake Mod Kit project");
     if (Busy()) return Phase;
+    if (!HasTools()) return TEXT("Enable authoring tools to continue");
     if(!IsMapWorkspace())
     {
         if(ActiveKind==TEXT("game-mode"))return TEXT("Game-mode mods: planned");
         if(!CanAuthorCurrentKind())return TEXT("Weapon authoring SDK required");
-        return ModId.IsEmpty()?TEXT("Create or choose a weapon draft"):TEXT("Weapon pack authoring draft");
+        if(OperationFailed)return TEXT("Weapon operation needs attention");
+        if(Ready)return ExportIsCurrent()?TEXT("Weapon pack exported"):TEXT("Next: export your weapon pack");
+        return ModId.IsEmpty()?TEXT("Create or choose a weapon pack"):Stale?TEXT("Check your weapon pack"):TEXT("Prepare weapons and review compatibility");
     }
     if (ModId.IsEmpty()) return TEXT("Your next map starts here");
     if (!HasTools()) return TEXT("Set up your authoring tools");

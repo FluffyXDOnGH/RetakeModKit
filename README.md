@@ -4,33 +4,19 @@
 
 Create maps and weapons for **Retake** in a standalone Unreal project.
 
-Keep the Mod Kit and Retake up to date. Setup and export check the required engine, SDK and game compatibility automatically.
+Create, check, prepare and export your mod from the **Retake Mod Kit Workspace** inside Unreal Editor.
 
 ## 1. Get the kit
 
-Clone the kit from GitHub. The repository includes prebuilt Windows editor modules alongside their source:
+On this GitHub page, choose **Code → Download ZIP** and extract the folder. You can also clone the repository using your Git application. The kit includes its prebuilt Windows modules and source.
 
-```powershell
-git clone https://github.com/humarkx/RetakeModKit.git
-cd RetakeModKit
-```
+## 2. Open the project
 
-## 2. Set up Unreal
+Double-click **RetakeModKit.uproject**, then open **Retake → Mod Kit Workspace**.
 
-Use an **Unreal Engine 6** installation for Windows, either an installed engine or a source build. No specific Git revision or pristine checkout is required. For a source build, build **UnrealEditor** and **ShaderCompileWorker** first.
+You need Unreal Engine 6 installed on Windows; the engine itself is not included. If Unreal asks which engine to use, select your UE6 installation. If it reports missing or incompatible modules, follow [troubleshooting](Docs/Compatibility.md#opening-with-another-ue6-build).
 
-Install Python **3.11+**. Setup uses the bundled editor DLLs when they match your engine build. If they do not match, install the Visual Studio C++ tools required by your engine; Setup builds the kit locally. Git is needed only for cloning or maintaining a Git checkout.
-
-From the kit folder, run these commands with your engine's location:
-
-```powershell
-.\Setup.ps1 -EngineRoot 'D:\YourEngine'
-.\Open-ModKit.ps1
-```
-
-Setup installs the authoring tools and either uses the matching prebuilt modules or compiles them for your engine. Open the kit with `Open-ModKit.ps1` after setup succeeds; double-clicking the `.uproject` can select another engine. Rerun Setup after changing engines or updating the kit.
-
-Accepting a UE6 installation does not guarantee that every revision can compile the current SDK or load its assets. Setup still checks the SDK contract, and export still checks cooked-content compatibility. You use existing Retake client/server packages for gameplay; you do not build Retake.
+On first use, click **Enable authoring tools** in the workspace. It uses the editor's bundled Python to prepare the required tools and compatibility records. Progress appears in the workspace; no terminal or separate Python installation is needed for this editor workflow.
 
 ## 3. Create your mod
 
@@ -39,12 +25,14 @@ Accepting a UE6 installation does not guarantee that every revision can compile 
 | An empty map, a basic starting area, or a separate map example | [Create a map](Docs/Maps.md) |
 | An empty weapon pack or the original example carbine | [Create weapons](Docs/Weapons.md) |
 
-Create a new mod namespace before editing examples. Keep your assets inside that mod and track it in its own repository; the kit ignores `Mods/*`.
+Click **+ New mod**, choose **Map** or **Weapons**, and give it a name. Keep your assets inside that mod's Content folder. The workspace also provides original examples to explore.
 
 ## 4. Prepare, export and test
 
 **Create → Author → Validate → Prepare/Bake → Export → Test**
 
-Follow the [export and testing guide](Docs/Export.md). Exports contain Windows and Linux server content; editable-source recovery is a separate archive. Uploading and workshop integration are outside this kit.
+Use the workspace's **Save**, **Check**, **Prepare** and **Export** controls. **Open export folder** takes you to the finished files. Exports include Windows and Linux server content plus a separate editable-source recovery archive. See the [export guide](Docs/Export.md) for details.
+
+Keep the Mod Kit and Retake up to date. Export checks SDK and game compatibility before cooking. Use your installed Retake game for gameplay testing; uploading and workshop integration are separate from the authoring workflow.
 
 [Compatibility & troubleshooting](Docs/Compatibility.md) · [License](LICENSE.txt) · [Third-party notices](Notices/ThirdParty.md)

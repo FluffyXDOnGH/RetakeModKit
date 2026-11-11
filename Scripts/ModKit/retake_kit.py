@@ -825,6 +825,26 @@ def validate_descriptor(path, expected_kind=None):
         raise ValueError('Creator workspaces cannot contain Config, Source or Binaries folders')
 
 
+def compatibility_status(kit):
+    """Shared saved engine/game readiness for both editor workflows."""
+    sdk = read(kit / 'SDK.lock.json')
+    targets = {row['name']: row for row in sdk.get('shipped', {}).get('targets', [])}
+    platforms = []
+    for platform in PLATFORMS:
+        record = kit / 'Saved/ModKit/EngineRecords' / f'{platform}.json'
+        target = targets.get(platform, {})
+        producer = read(record).get('recordId', '') if record.is_file() else ''
+        configured = bool(producer and target.get('consumerRecord') and (kit / 'ModKit/BaseCook' / platform / 'AssetRegistry.bin').is_file())
+        platforms.append({'platform': platform, 'configured': configured,
+            'localTestOnly': target.get('qualificationOnly') is True,
+            'qualified': configured and any(qualified(kit, platform, producer, material) for material in ('SdkMaterials', 'CustomShaders'))})
+    candidate = bool(platforms) and all(row['localTestOnly'] for row in platforms)
+    return {'sdkCurrent': sdk_source_hash(kit) == sdk.get('sourceHash'), 'platforms': platforms,
+            'candidateOnly': candidate,
+            'compatibilityConfigured': all(row['configured'] and (candidate or row['qualified']) for row in platforms)}
+
+
+
 def draft_status(kit, engine, mod, report=None):
     if not MOD.fullmatch(mod): raise ValueError('Select a valid mod workspace')
     validate_descriptor(kit / 'Mods' / mod / f'{mod}.uplugin', expected_kind='weapons')
@@ -839,8 +859,14 @@ def draft_status(kit, engine, mod, report=None):
     result = read(native)
     if result.get('format') != 1 or result.get('complete') is not True or result.get('kind') != 'weapons' or result.get('modId') != mod:
         raise ValueError('Weapon authoring check returned an incompatible report')
+    result.update(compatibility_status(kit))
+    result['ready'] = bool(result['valid'] and result['sdkCurrent'] and result['compatibilityConfigured'])
+    if not result['compatibilityConfigured']:
+        result.setdefault('issues', []).append({'error': True, 'code': 'Compatibility', 'actor': '',
+            'detail': 'Export compatibility is not ready. Enable authoring tools in the workspace, then check again. If this remains, update the kit and Retake; the engine/game combination needs a published compatibility record.'})
     write(report, result)
-    print('event=CreatorDraftReadiness ' + json.dumps({'report': str(report), 'valid': result['valid'], 'exportReady': False}), flush=True)
+    print('event=CreatorDraftReadiness ' + json.dumps({'report': str(report), 'valid': result['valid'],
+          'compatibilityReady': result['compatibilityConfigured'], 'exportChecksPreparation': True}), flush=True)
     return result
 
 
@@ -875,20 +901,8 @@ def authoring_status(kit, engine, mod, modes='auto', report=None):
         raise RuntimeError(f'Map check returned an incomplete or incompatible readiness report. Update the Mod Kit; see {native}')
     if operation_error and result['valid'] is not False:
         raise operation_error
-    sdk = read(kit / 'SDK.lock.json')
-    targets = {r['name']: r for r in sdk.get('shipped', {}).get('targets', [])}
-    platform_status = []
-    for platform in PLATFORMS:
-        record = kit / 'Saved/ModKit/EngineRecords' / f'{platform}.json'
-        target = targets.get(platform, {})
-        producer = read(record).get('recordId', '') if record.is_file() else ''
-        configured = bool(producer and target.get('consumerRecord') and (kit / 'ModKit/BaseCook' / platform / 'AssetRegistry.bin').is_file())
-        platform_status.append({'platform': platform, 'configured': configured,
-            'localTestOnly': target.get('qualificationOnly') is True,
-            'qualified': configured and any(qualified(kit, platform, producer, material) for material in ('SdkMaterials', 'CustomShaders'))})
-    candidate = bool(platform_status) and all(p['localTestOnly'] for p in platform_status)
-    compatible = all(p['configured'] and (candidate or p['qualified']) for p in platform_status)
-    current = sdk_source_hash(kit) == sdk.get('sourceHash')
+    compatibility = compatibility_status(kit)
+    compatible, current = compatibility['compatibilityConfigured'], compatibility['sdkCurrent']
     preparation = [step for m in result['maps'] for step in m.get('preparation', [])]
     if any({step.get('id') for step in m.get('preparation', [])} != {'acoustics', 'minimap', 'visibility'}
            for m in result['maps']):
@@ -896,7 +910,8 @@ def authoring_status(kit, engine, mod, modes='auto', report=None):
     if any(step.get('state') not in ('current', 'unused', 'needed', 'blocked') for step in preparation):
         raise RuntimeError('The native map checker returned an unknown preparation state. Update the Mod Kit.')
     baked = bool(result['maps']) and all(step['state'] in ('current', 'unused') for step in preparation)
-    result.update({'sdkCurrent': current, 'platforms': platform_status, 'candidateOnly': candidate,
+    result.update(compatibility)
+    result.update({'sdkCurrent': current,
         'compatibilityConfigured': compatible, 'preparationComplete': baked,
         'preparationNeeded': any(s['state'] == 'needed' for s in preparation),
         'preparationBlocked': any(s['state'] == 'blocked' for s in preparation),
