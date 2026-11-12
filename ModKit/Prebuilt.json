@@ -206,7 +206,7 @@
     "Plugins/RetakeMapSDK/Source/RetakeMapSDKEditor/Public/RetakeWeaponPoseBasis.h": "ef207f748aaa9991d537cebe0d0fa469865bb63cb1b29d7ebfdd684bc09dbeb0",
     "Plugins/RetakeMapSDK/Source/RetakeMapSDKEditor/Public/RetakeWeaponPoseRecipe.h": "c47ad990c195a689bb2636f1be4014686a6169f8f80fb593453bd6aaacafa9cb",
     "Plugins/RetakeMapSDK/Source/RetakeMapSDKEditor/RetakeMapSDKEditor.Build.cs": "e786156c8a1f5f3b66b7c2b58c2b10615a843a2d3f73d4e272f9bcf1ea5bebcd",
-    "RetakeModKit.uproject": "596d7f0f7f9bd0c485a294f8aef5cf53edba3b25c15cf3c312957fcffd17d3fb",
+    "RetakeModKit.uproject": "f3b5ee4b22bafd3d44eac32949f12f1fd8cd7ef3a848756c9ec9565fc2cc754d",
     "Source/RetakeModKit.Target.cs": "72c4be9ec2598953605ef3670fe34e284a6c22d11a4e15a9c701d63de471c141",
     "Source/RetakeModKit/RetakeModKit.Build.cs": "fbfa9ef7f6f605794b9f1494a686bf81a6b547a622af68ed0c7e88d3ae66fd8a",
     "Source/RetakeModKit/RetakeModKit.cpp": "6202f9fbf5d5ee248a17ef70f2ed5beae31bf381608805b28b47d3ef3cbd36d7",
@@ -214,5 +214,5 @@
     "Source/RetakeModKitServer.Target.cs": "cb58551c85c95b4c5ae1fda078ba7e2c7ae3f276b96b6f66071d08092bf4fc72"
   },
   "platform": "Win64",
-  "sourceContentHash": "acdd0a6bda7957f6d594140bde97a72eaf3015d3314beef11ffd87be28a2c950"
+  "sourceContentHash": "9b23d995619c6d6ca0c6cc4e2440c2253a47d69ae8f20ae006fd3baee2ada5fe"
 }
