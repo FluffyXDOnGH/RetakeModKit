@@ -16,7 +16,7 @@
   },
   "files": {
     "Binaries/Win64/UnrealEditor-RetakeModKit.dll": {
-      "sha256": "1d0bbeeae346a19f03e685e6bea7191761b79b4f5e9cd01bf0fade32f12d98ba",
+      "sha256": "fd2ce3efec1e253cc5448b51e73ced256102bb731d53fa3b3fa3753e54059c61",
       "size": 49152
     },
     "Binaries/Win64/UnrealEditor.modules": {
@@ -28,11 +28,11 @@
       "size": 222
     },
     "Plugins/RetakeDestruction/Binaries/Win64/UnrealEditor-RetakeDestruction.dll": {
-      "sha256": "b1b92c854f7a1c9a922f53afe0124c6a75589c3d228058c01b543e31373252d2",
+      "sha256": "58bc6da4208855f08b24662ffe46e287a47fef4cd2720d48b2286472a97cb3e4",
       "size": 654336
     },
     "Plugins/RetakeDestruction/Binaries/Win64/UnrealEditor-RetakeDestructionEditor.dll": {
-      "sha256": "063ec462a726c963cc8c92203d8b7ef331277ca08fcb8e7c346b963fe7341edd",
+      "sha256": "e314ff18afb1fd1fc1e81258710313628cdc98806f1762b2ec068154ee159f11",
       "size": 314880
     },
     "Plugins/RetakeDestruction/Binaries/Win64/UnrealEditor.modules": {
@@ -44,11 +44,11 @@
       "size": 925
     },
     "Plugins/RetakeMapSDK/Binaries/Win64/UnrealEditor-RetakeMapSDK.dll": {
-      "sha256": "4ae81d278f698fe2252a7c0a0792b8c01b64d6801aa2b669d5813171ca6df354",
+      "sha256": "d7b9b7c75382c17f3ed9f80d73896fac8bfa9d6ae5495bd467186224bc023a15",
       "size": 2141184
     },
     "Plugins/RetakeMapSDK/Binaries/Win64/UnrealEditor-RetakeMapSDKEditor.dll": {
-      "sha256": "6ff495135ac3d91008e74374975106d62099e0199ad76bc76d7e7df4e997d3fa",
+      "sha256": "1fd13d6398478a58e5b9da38fb0ccb404154f080be639aa57f0adea2d359f734",
       "size": 1890304
     },
     "Plugins/RetakeMapSDK/Binaries/Win64/UnrealEditor.modules": {
@@ -206,7 +206,7 @@
     "Plugins/RetakeMapSDK/Source/RetakeMapSDKEditor/Public/RetakeWeaponPoseBasis.h": "ef207f748aaa9991d537cebe0d0fa469865bb63cb1b29d7ebfdd684bc09dbeb0",
     "Plugins/RetakeMapSDK/Source/RetakeMapSDKEditor/Public/RetakeWeaponPoseRecipe.h": "c47ad990c195a689bb2636f1be4014686a6169f8f80fb593453bd6aaacafa9cb",
     "Plugins/RetakeMapSDK/Source/RetakeMapSDKEditor/RetakeMapSDKEditor.Build.cs": "e786156c8a1f5f3b66b7c2b58c2b10615a843a2d3f73d4e272f9bcf1ea5bebcd",
-    "RetakeModKit.uproject": "f3b5ee4b22bafd3d44eac32949f12f1fd8cd7ef3a848756c9ec9565fc2cc754d",
+    "RetakeModKit.uproject": "a3aaf0b72658eaaca3edfb8815ce518fa46e7c243805908de3ff889bfaa48ffb",
     "Source/RetakeModKit.Target.cs": "72c4be9ec2598953605ef3670fe34e284a6c22d11a4e15a9c701d63de471c141",
     "Source/RetakeModKit/RetakeModKit.Build.cs": "fbfa9ef7f6f605794b9f1494a686bf81a6b547a622af68ed0c7e88d3ae66fd8a",
     "Source/RetakeModKit/RetakeModKit.cpp": "6202f9fbf5d5ee248a17ef70f2ed5beae31bf381608805b28b47d3ef3cbd36d7",
@@ -214,5 +214,5 @@
     "Source/RetakeModKitServer.Target.cs": "cb58551c85c95b4c5ae1fda078ba7e2c7ae3f276b96b6f66071d08092bf4fc72"
   },
   "platform": "Win64",
-  "sourceContentHash": "1ad83ef36334fd30c3e6a9ff902f888232b85315ef6a958d288fa36c3adf2747"
+  "sourceContentHash": "afadcb514a6eaca63b41c096fc5ce30fde3bb3d7123cb8d2741124782e647dde"
 }

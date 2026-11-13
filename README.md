@@ -14,6 +14,8 @@ On this GitHub page, choose **Code → Download ZIP** and extract the folder. Yo
 
 Double-click **RetakeModKit.uproject**, then open **Retake → Mod Kit Workspace**.
 
+This is a normal UE6 project with Unreal's default engine plugins enabled. The standard editor tools remain available, including **Edit → Plugins** for managing additional authoring plugins.
+
 You need Unreal Engine 6 installed on Windows; the engine itself is not included. If Unreal asks which engine to use, select your UE6 installation. If it reports missing or incompatible modules, follow [troubleshooting](Docs/Compatibility.md#opening-with-another-ue6-build).
 
 On first use, click **Enable authoring tools** in the workspace. It uses the editor's bundled Python to prepare the required tools and compatibility records. Progress appears in the workspace; no terminal or separate Python installation is needed for this editor workflow.

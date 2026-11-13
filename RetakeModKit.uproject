@@ -1,7 +1,7 @@
 {
   "Category": "Retake",
   "Description": "Retake Mod Kit - map and weapon authoring.",
-  "DisableEnginePluginsByDefault": true,
+  "DisableEnginePluginsByDefault": false,
   "EngineAssociation": "",
   "FileVersion": 3,
   "Modules": [
@@ -79,6 +79,10 @@
     {
       "Enabled": true,
       "Name": "SkeletalReduction"
+    },
+    {
+      "Enabled": true,
+      "Name": "PluginBrowser"
     }
   ]
 }
