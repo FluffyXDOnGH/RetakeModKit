@@ -18,6 +18,7 @@ Compatible game updates should continue accepting existing exports. Changes to n
 
 | Problem | Action |
 |---|---|
+| Example fails with `Could not load Python file` and a broken `retake_*.py` path | Update the kit for the Windows script-path fix. If the failed attempt already created `Mods/RetakeMod_Example`, close the editor and move that unfinished folder to a backup outside `Mods`, then reopen and click **Example** again. Keep the backup if it contains any edits. |
 | Project generation fails with `JsonReaderException: '0xFF'` | Open `RetakeModKit.uproject` in Notepad, replace any typographic dash in its Description with a normal `-`, and use **Save As → UTF-8**, keeping the `.uproject` filename. Preserve your EngineAssociation, then retry **Generate Visual Studio project files**. Affected UE6 version selectors can save non-ASCII project descriptions as UTF-16, which UBT rejects. The current kit description avoids this issue. |
 | Unsupported engine major version | Select a UE6 installation when opening the project. |
 | Prebuilt DLLs target another engine | Rerun Setup with your engine. It will build the included source; install the C++ toolchain required by that engine. |

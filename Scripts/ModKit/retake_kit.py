@@ -116,7 +116,9 @@ def run(args, *, cwd, log=None):
                 stream.seek(max(0, Path(log).stat().st_size - 512 * 1024))
                 tail = stream.read().decode('utf-8', errors='replace')
             reasons = re.findall(r'event=[A-Za-z0-9_]*Failed[^\r\n]*?reason="([^"]+)"', tail)
-            detail = reasons[-1] if reasons else f'{Path(args[0]).name} failed ({result.returncode})'
+            python_errors = re.findall(r'LogPython: Error:[ \t]*(.+)', tail)
+            detail = (reasons[-1] if reasons else ' '.join(python_errors[-1].split())[:1200]
+                      if python_errors else f'{Path(args[0]).name} failed ({result.returncode})')
             raise RuntimeError(f'{detail}; see {log}')
     else:
         subprocess.run(args, cwd=cwd, check=True)
@@ -175,6 +177,10 @@ def engine_root(kit, explicit=None):
 
 
 def commandlet(kit, engine, name, *args, rendering=False, uproject=None):
+    # PythonScriptCommandlet unescapes quoted filenames. Windows paths containing
+    # spaces are quoted, so a backslash before retake_*.py becomes a carriage return.
+    # All -script values supplied by this backend are file paths, not inline code.
+    args = tuple(arg[:8] + arg[8:].replace('\\', '/') if arg.lower().startswith('-script=') else arg for arg in args)
     executable = engine / ('Engine/Binaries/Win64/UnrealEditor-Cmd.exe' if os.name == 'nt' else 'Engine/Binaries/Linux/UnrealEditor-Cmd')
     options = ['-AllowCommandletRendering'] if rendering else ['-NullRHI']
     selected = [arg[5:] for arg in args if arg.startswith('-Mod=')]
